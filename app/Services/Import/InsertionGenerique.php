@@ -55,12 +55,12 @@ class InsertionGenerique {
                 Log::error("Aucune colonne d'identifiant trouvée dans les définitions de colonnes.");
                 throw new Exception("Aucune colonne d'identifiant trouvée dans les définitions de colonnes.");
             }
-
+            
              
             $existingRecords = DB::table($tableName)->whereIn("id", $recordIds)->pluck("id")->toArray();
             $newRecordIds = array_diff($recordIds, $existingRecords);
 
-            
+            // dd($existingRecords);
             foreach ($newRecordIds as $recordId) {
                 $data = [];
                 foreach ($columnsToInsert as $columnName => $isId) {
