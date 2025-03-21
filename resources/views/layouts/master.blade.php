@@ -36,7 +36,6 @@
         </script>
     <?php } ?>
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('style')
 </head>
 <body>
@@ -158,33 +157,11 @@
 
             @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
                 
-                <a href="{{ route('reset') }}"  id="reset-link" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
+                <a href="{{ route('reset') }}" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
                 <i class="fa fa-refresh sidebar-icon"></i>
                 <span id="menu-txt">{{ __('Réinitialiser') }}</span>
             </a>
             @endif
-            <script>
-                document.getElementById('reset-link').addEventListener('click', function(e) {
-                    e.preventDefault(); // Empêche le comportement par défaut du lien
-
-                    // Affichage du popup de confirmation avec SweetAlert
-                    Swal.fire({
-                        title: 'Êtes-vous sûr ?',
-                        text: "Cela va réinitialiser toutes les données !",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Oui, réinitialiser!',
-                        cancelButtonText: 'Annuler'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Si l'utilisateur confirme, on redirige vers la route de réinitialisation
-                            window.location.href = "{{ route('reset') }}";
-                        }
-                    });
-                });
-            </script>
 
 
             @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
