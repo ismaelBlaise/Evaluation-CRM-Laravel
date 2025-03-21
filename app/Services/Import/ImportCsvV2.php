@@ -8,7 +8,7 @@ use Exception;
 class ImportCsvV2
 {
     
-    public static function createTemporaryTableFromCsv($filePath)
+    public function createTemporaryTableFromCsv($filePath)
     {
          
         DB::beginTransaction();
@@ -43,7 +43,7 @@ class ImportCsvV2
     }
 
     
-    private static function createTempTable($tableName, $headers)
+    private function createTempTable($tableName, $headers)
     {
         $columnDefs = array_map(function ($column) {
             return "`$column` VARCHAR(255)";  
@@ -55,7 +55,7 @@ class ImportCsvV2
         DB::statement("CREATE TEMPORARY TABLE $tableName ($columnDefsString)");
     }
 
-    private static function insertIntoTempTable($tableName, $data, $headers)
+    private function insertIntoTempTable($tableName, $data, $headers)
     {
         $columns = implode(", ", $headers);  
 

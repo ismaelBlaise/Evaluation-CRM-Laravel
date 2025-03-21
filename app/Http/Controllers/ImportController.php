@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Import\ImportCsvV2;
 use Illuminate\Http\Request;
-use App\Services\Import\ImportCsv;
+// use App\Services\Import\ImportCsv;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -13,7 +14,7 @@ class ImportController extends Controller
 {
     private $importCsv;
 
-    public function __construct(ImportCsv $importCsv)
+    public function __construct(ImportCsvV2 $importCsv)
     {
         $this->importCsv = $importCsv;
     }
@@ -31,7 +32,7 @@ class ImportController extends Controller
             $file = $request->file('csv_file');
             $filePath = $file->storeAs('csv', 'data.csv', 'local');  
      
-            $result = $this->importCsv->importFromCsv(storage_path("app/csv/data.csv"));
+            $result = $this->importCsv->createTemporaryTableFromCsv(storage_path("app/csv/data.csv"));
     
             Session::flash('success', 'Importation réussie');
             Session::flash('import_message', $result);
