@@ -75,6 +75,51 @@ class ImportCsvV2
         }
     }
 
-    
+
+    public function insertUsersFromTempTable($tempTableName)
+    {
+        DB::beginTransaction();
+
+        try {
+            
+            $gestionContrainte = new GestionContrainte();
+            $constraintsMap = $gestionContrainte->removeAllConstraints("users");
+
+            $columns = DB::select("SHOW COLUMNS FROM $tempTableName");
+            $userColumns = array_filter($columns, function ($column) {
+                return strpos($column->Field, 'user_') === 0;
+            });
+
+            if (empty($userColumns)) {
+                return;
+            }
+
+            $userIds = [];
+            foreach ($userColumns as $column) {
+                $columnName = $column->Field;
+                $ids = DB::table($tempTableName)->pluck($columnName)->toArray();
+                $userIds = array_merge($userIds, $ids);
+            }
+            $userIds = array_unique(array_filter($userIds)); 
+
+            $existingUsers = DB::table('users')->whereIn('id', $userIds)->pluck('id')->toArray();
+            $newUserIds = array_diff($userIds, $existingUsers);
+
+            foreach ($newUserIds as $userId) {
+                DB::table('users')->insert(['id' => $userId]);
+            }
+
+            $gestionContrainte->restoreConstraints("users",$constraintsMap);
+
+            DB::commit();
+            echo "Les nouveaux utilisateurs ont été insérés avec succès.";
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+    }
+
+
 }
 
