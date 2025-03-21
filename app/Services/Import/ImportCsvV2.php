@@ -76,7 +76,7 @@ class ImportCsvV2
     }
 
 
-    public function insertUsersFromTempTable($tableName,$columnDefs)
+    public function insertUsersFromTempTable()
     {
         DB::beginTransaction();
 
