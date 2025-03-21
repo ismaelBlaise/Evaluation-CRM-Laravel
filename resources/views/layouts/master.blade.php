@@ -171,6 +171,13 @@
                 </a>
             @endif
 
+            @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
+                <a href="{{ route('generer.index') }}" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
+                    <i class="fa fa-file-csv sidebar-icon"></i>
+                    <span id="menu-txt">{{ __('Generer donnee') }}</span>
+                </a>
+            @endif
+
 
 
             @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
