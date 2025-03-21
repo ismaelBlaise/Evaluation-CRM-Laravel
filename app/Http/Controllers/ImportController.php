@@ -35,7 +35,11 @@ class ImportController extends Controller
      
             $result = $this->importCsv->createTemporaryTableFromCsv(storage_path("app/csv/data.csv"));
             $tableName="users";
-            $columnDefs=['user_id','name'];
+            $columnDefs = [
+                ['nom' => 'name', 'int' => 1],
+                ['nom' => 'user_id', 'int' => 0], // Colonne d'identifiant (client_id)
+                 // Colonne normale (client_name)
+            ];
             $insertionGenerique=new InsertionGenerique();
             $insertionGenerique->insertFromTempTable($tableName, $columnDefs);
             Session::flash('success', 'Importation réussie');
