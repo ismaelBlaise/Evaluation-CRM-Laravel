@@ -25,7 +25,7 @@ class ImportController extends Controller
     public function uploadCsv(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|mimes:csv,txt|max:2048'
+            'csv_file' => 'required|mimes:csv,txt|max:10000'
         ]);
 
         try {
