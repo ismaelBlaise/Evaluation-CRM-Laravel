@@ -74,5 +74,7 @@ class ImportCsvV2
             DB::statement("INSERT INTO $tableName ($columns) VALUES ($valuesString)");
         }
     }
+
+    
 }
 
