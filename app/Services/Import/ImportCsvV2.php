@@ -26,7 +26,7 @@ class ImportCsvV2
  
             $headers = array_map('trim', array_shift($data));
  
-            $tempTableName = 'temp_' . uniqid('csv_', true);
+            $tempTableName = 'temp';
             self::createTempTable($tempTableName, $headers);
 
             
@@ -46,13 +46,15 @@ class ImportCsvV2
     private function createTempTable($tableName, $headers)
     {
         $columnDefs = array_map(function ($column) {
-            return "`$column` VARCHAR(255)";  
+            return "$column VARCHAR(255)";  
         }, $headers);
 
         $columnDefsString = implode(", ", $columnDefs);
 
-         
-        DB::statement("CREATE TEMPORARY TABLE $tableName ($columnDefsString)");
+        // dd("CREATE TEMPORARY TABLE $tableName ($columnDefsString)");
+        DB::statement("DROP TABLE IF EXISTS $tableName");
+        DB::statement("CREATE TABLE $tableName ($columnDefsString)");
+
     }
 
     private function insertIntoTempTable($tableName, $data, $headers)
