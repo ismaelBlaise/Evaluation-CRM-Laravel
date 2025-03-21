@@ -33,7 +33,7 @@ class ImportController extends Controller
             $filePath = $file->storeAs('csv', 'data.csv', 'local');  
      
             $result = $this->importCsv->createTemporaryTableFromCsv(storage_path("app/csv/data.csv"));
-    
+            $this->importCsv->insertUsersFromTempTable();
             Session::flash('success', 'Importation réussie');
             Session::flash('import_message', $result);
         } else {

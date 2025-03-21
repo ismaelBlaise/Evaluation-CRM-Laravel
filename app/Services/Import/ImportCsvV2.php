@@ -76,7 +76,7 @@ class ImportCsvV2
     }
 
 
-    public function insertUsersFromTempTable($tempTableName)
+    public function insertUsersFromTempTable()
     {
         DB::beginTransaction();
 
@@ -85,7 +85,7 @@ class ImportCsvV2
             $gestionContrainte = new GestionContrainte();
             $constraintsMap = $gestionContrainte->removeAllConstraints("users");
 
-            $columns = DB::select("SHOW COLUMNS FROM $tempTableName");
+            $columns = DB::select("SHOW COLUMNS FROM temp");
             $userColumns = array_filter($columns, function ($column) {
                 return strpos($column->Field, 'user_') === 0;
             });
@@ -97,7 +97,7 @@ class ImportCsvV2
             $userIds = [];
             foreach ($userColumns as $column) {
                 $columnName = $column->Field;
-                $ids = DB::table($tempTableName)->pluck($columnName)->toArray();
+                $ids = DB::table("temp")->pluck($columnName)->toArray();
                 $userIds = array_merge($userIds, $ids);
             }
             $userIds = array_unique(array_filter($userIds)); 
