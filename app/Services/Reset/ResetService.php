@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories\Reset;
-
+use Illuminate\Support\Facades\DB;
 class ResetService{
 
 
@@ -36,27 +36,27 @@ class ResetService{
         DB::table('crm2.offers')->truncate();
         DB::table('crm2.clients')->truncate();
 
-        $adminUserIds = DB::table('crm2.role_user')
-            ->join('crm2.roles', 'crm2.role_user.role_id', '=', 'crm2.roles.id')
-            ->where('crm2.roles.name', '=', 'administrator')
-            ->pluck('crm2.role_user.user_id')
-            ->toArray();
+        // $adminUserIds = DB::table('crm2.role_user')
+        //     ->join('crm2.roles', 'crm2.role_user.role_id', '=', 'crm2.roles.id')
+        //     ->where('crm2.roles.name', '=', 'administrator')
+        //     ->pluck('crm2.role_user.user_id')
+        //     ->toArray();
             
-        dump($adminUserIds);
+        // dump($adminUserIds);
         
-        DB::table('crm2.users')
-            ->whereNotIn('id', $adminUserIds)
-            ->delete();
+        // DB::table('crm2.users')
+        //     ->whereNotIn('id', $adminUserIds)
+        //     ->delete();
 
         
-        DB::table('crm2.role_user')
-            ->whereNotIn('user_id', $adminUserIds)
-            ->delete();
+        // DB::table('crm2.role_user')
+        //     ->whereNotIn('user_id', $adminUserIds)
+        //     ->delete();
 
         
-        DB::table('crm2.department_user')
-            ->whereNotIn('user_id', $adminUserIds)
-            ->delete();
+        // DB::table('crm2.department_user')
+        //     ->whereNotIn('user_id', $adminUserIds)
+        //     ->delete();
 
         // Suppression optionnelle de certaines tables
         // DB::table('crm2.products')->truncate();
