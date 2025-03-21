@@ -22,7 +22,7 @@ class GenerateData extends Controller
             if ($count > 0) { 
                 for ($i = 0; $i < $count; $i++) {
                     Artisan::call('db:seed', [
-                        '--class' => 'A'.ucfirst(camel_case($table)) . 'Seeder'
+                        '--class' => ucfirst(camel_case($table)) . 'DummyTableSeeder'
                     ]);
                 }
             }
