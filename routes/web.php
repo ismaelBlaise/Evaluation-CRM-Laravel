@@ -42,10 +42,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/', 'ImportController@index')->name('index');
         Route::post('/upload', 'ImportController@uploadCsv')->name('upload');
     });
+
+    Route::prefix('generate')->name('generate.')->group(function () {
+        Route::get('/', 'GenerateData@index')->name('index');
+        Route::post('/generate', 'GenerateData@generate')->name('generate');
+    });
     /**
     * Roles
     */
 
+    
     Route::group(['prefix' => 'roles'], function () {
         Route::get('/data', 'RolesController@indexData')->name('roles.data');
         Route::patch('/update/{external_id}', 'RolesController@update');
