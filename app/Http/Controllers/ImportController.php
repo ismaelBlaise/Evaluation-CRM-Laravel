@@ -7,6 +7,7 @@ use App\Services\Import\ImportCsv;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Session;
 
 class ImportController extends Controller
 {
@@ -25,27 +26,19 @@ class ImportController extends Controller
 
     public function uploadCsv(Request $request)
     {
-        $request->validate([
-            'csv_file' => 'required|mimes:csv,txt|max:10000'
-        ]);
-
-        try {
-            $path = $request->file('csv_file')->store('csv_imports');
-            $filePath = storage_path("app/$path");
-
-            $data = $this->importCsv->readCsvSections($filePath);
-
-            if (empty($data)) {
-                return back()->with('error', 'Le fichier CSV est vide ou mal formaté.');
-            }
-
-            $this->importCsv->importDataFromCsv($filePath);
-
-            return back()->with('success', 'Importation réussie.');
-
-        } catch (Exception $e) {
-            Log::error("Erreur lors de l'importation du fichier CSV : " . $e->getMessage());
-            return back()->with('error', 'Une erreur est survenue lors de l\'importation. Veuillez réessayer.');
+          
+         if ($request->hasFile('csv_file') && $request->file('csv_file')->isValid()) {
+            $file = $request->file('csv_file');
+            $filePath = $file->storeAs('csv', 'data.csv', 'local');  
+     
+            $result = $this->importCsv->importFromCsv(storage_path("app/csv/data.csv"));
+    
+            Session::flash('success', 'Importation réussie');
+            Session::flash('import_message', $result);
+        } else {
+            Session::flash('error', 'Erreur lors de l\'importation du fichier CSV.');
         }
+    
+        return redirect()->route('import.index');
     }
 }
