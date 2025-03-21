@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Reset;
+namespace App\Services\Reset;
 use Illuminate\Support\Facades\DB;
 class ResetService{
 
