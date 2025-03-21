@@ -12,7 +12,7 @@ class ResetController extends Controller
 
     public function __construct(ResetService $resetService)
     {   
-        // $this->middleware("can.reset.database");
+        $this->middleware("can.reset.database");
         $this->resetService = $resetService;
     }
     public function resetDatabase(): RedirectResponse
