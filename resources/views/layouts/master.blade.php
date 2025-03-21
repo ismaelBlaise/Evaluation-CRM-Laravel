@@ -158,7 +158,7 @@
 
             @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
                 
-                <a href="{{ route('reset') }}" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
+                <a href="{{ route('reset') }}"  id="reset-link" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
                 <i class="fa fa-refresh sidebar-icon"></i>
                 <span id="menu-txt">{{ __('Réinitialiser') }}</span>
             </a>
