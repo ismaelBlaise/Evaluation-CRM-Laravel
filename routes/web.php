@@ -34,6 +34,10 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::resource('users', 'UsersController');
 
+    Route::prefix('import')->name('import.')->group(function () {
+        Route::get('/', 'ImportController@index')->name('index');
+        Route::post('/upload', 'ImportController@uploadCsv')->name('upload');
+    });
     /**
     * Roles
     */

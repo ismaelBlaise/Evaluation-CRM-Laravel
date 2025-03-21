@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Import\ImportCsv;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class ImportController extends Controller
-{
+{   
+
+    public function index(){
+        return view("import.index");
+    }
     public function uploadCsv(Request $request)
     {
         $request->validate([
