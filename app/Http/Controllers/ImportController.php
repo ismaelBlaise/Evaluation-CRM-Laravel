@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\Import\ImportCsvV2;
+use App\Services\Import\InsertionGenerique;
 use Illuminate\Http\Request;
 // use App\Services\Import\ImportCsv;
 use Illuminate\Support\Facades\Storage;
@@ -33,7 +34,10 @@ class ImportController extends Controller
             $filePath = $file->storeAs('csv', 'data.csv', 'local');  
      
             $result = $this->importCsv->createTemporaryTableFromCsv(storage_path("app/csv/data.csv"));
-            $this->importCsv->insertUsersFromTempTable();
+            $tableName="users";
+            $columnDefs=['user_id','name'];
+            $insertionGenerique=new InsertionGenerique();
+            $insertionGenerique->insertFromTempTable($tableName, $columnDefs);
             Session::flash('success', 'Importation réussie');
             Session::flash('import_message', $result);
         } else {

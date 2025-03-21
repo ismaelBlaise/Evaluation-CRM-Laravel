@@ -5,7 +5,7 @@ namespace App\Services\Import;
 use Illuminate\Support\Facades\DB;
 use Exception;
 class InsertionGenerique{
-    public function insertUsersFromTempTable($tableName, $columnDefs)
+    public function insertFromTempTable($tableName, $columnDefs)
     {
         DB::beginTransaction();
 
