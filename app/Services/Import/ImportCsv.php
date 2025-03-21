@@ -8,50 +8,66 @@ use Illuminate\Support\Carbon;
 
 class ImportCsv
 {
-    public function importClients(array $clients)
+    public function importDataFromCsv(string $filePath)
     {
-        foreach ($clients as $client) {
+        $sections = $this->readCsvSections($filePath);
+        
+        foreach ($sections as $tableName => $data) {
             try {
-                DB::table('crm2.clients')->insert([
-                    'external_id'   => uniqid('cli_'),   
-                    'address'       => $client['address'] ?? null,
-                    'zipcode'       => $client['zipcode'] ?? null,
-                    'city'          => $client['city'] ?? null,
-                    'company_name'  => $client['company_name'],
-                    'vat'           => $client['vat'] ?? null,
-                    'company_type'  => $client['company_type'] ?? null,
-                    'client_number' => $client['client_number'] ?? null,
-                    'user_id'       => $client['user_id'],
-                    'industry_id'   => $client['industry_id'],
-                    'created_at'    => Carbon::now(),  
-                    'updated_at'    => Carbon::now(),
-                ]);
+                if (empty($data)) {
+                    continue;  
+                }
+
+                 
+                DB::table($tableName)->insert($data);
+                Log::info("Importation réussie pour la table: $tableName");
             } catch (\Exception $e) {
-                Log::error("Erreur d'import client: " . $e->getMessage());
+                Log::error("Erreur lors de l'importation dans la table $tableName: " . $e->getMessage());
             }
         }
     }
 
-
-    public function readCsv(string $filePath): array
+    
+    public function readCsvSections(string $filePath): array
     {
-        $data = [];
+        $sections = [];
+        $currentTable = null;
+        $currentData = [];
+        $header = [];
+        
         if (!file_exists($filePath) || !is_readable($filePath)) {
-            return $data;
+            return $sections;
         }
 
-        $header = [];
-        if (($handle = fopen($filePath, 'r')) !== false) {
+        $handle = fopen($filePath, 'r');
+        
+        if ($handle !== false) {
             while (($row = fgetcsv($handle, 1000, ',')) !== false) {
-                if (empty($header)) {
-                    $header = $row; 
-                } else {
-                    $data[] = array_combine($header, $row);
+                if (isset($row[0]) && $row[0] === 'table_name' && isset($row[1])) {
+                    if ($currentTable) {
+                        $sections[$currentTable] = $currentData;
+                    }
+
+                    $currentTable = $row[1]; 
+                    $currentData = [];
+                }
+                elseif ($currentTable && !empty($row)) {
+                    if (empty($currentData)) {
+                        $header = $row;
+                    } else {
+                        $currentData[] = array_combine($header, $row);
+                    }
                 }
             }
+            
+            
+            if ($currentTable) {
+                $sections[$currentTable] = $currentData;
+            }
+            
             fclose($handle);
         }
 
-        return $data;
+        return $sections;
     }
 }
