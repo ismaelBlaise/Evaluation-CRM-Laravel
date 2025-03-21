@@ -1,0 +1,4 @@
+address,zipcode,city,company_name,vat,company_type,client_number,user_id,industry_id
+"10 Rue de Paris","75001","Paris","Entreprise A","FR123456789","SARL","10001","1","2"
+"20 Avenue des Champs","75008","Paris","Entreprise B","FR987654321","SAS","10002","2","3"
+"5 Place Bellecour","69002","Lyon","Société C","FR567890123","EURL","10003","3","1"
