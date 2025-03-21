@@ -18,7 +18,7 @@ Route::group(['middleware' => ['auth']], function () {
      */
     Route::get('/', 'PagesController@dashboard');
     Route::get('dashboard', 'PagesController@dashboard')->name('dashboard');
-    Route::get('reset', 'ResetController@resetDatabase')->name('reset');
+    
 
 
     /**
@@ -34,6 +34,10 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::resource('users', 'UsersController');
 
+    Route::prefix('reset')->name('reset.')->group(function () {
+        Route::get('/', 'ResetController@index')->name('index');
+        Route::get('/reset', 'ResetController@resetDatabase')->name('reset');
+    });
     Route::prefix('import')->name('import.')->group(function () {
         Route::get('/', 'ImportController@index')->name('index');
         Route::post('/upload', 'ImportController@uploadCsv')->name('upload');
