@@ -11,28 +11,28 @@ class InsertionGenerique{
 
         try {
             $gestionContrainte = new GestionContrainte();
-            $constraintsMap = $gestionContrainte->removeAllConstraints("$tableName");
+            $constraintsMap = $gestionContrainte->removeAllConstraints($tableName);
 
             if (empty($columnDefs)) {
-                throw new Exception("Aucune colonne spécifiée pour la récupération des utilisateurs.");
+                throw new Exception("Aucune colonne spécifiée pour la récupération des ". $tableName ."");
             }
 
-            $userIds = [];
+            $tableIds = [];
             foreach ($columnDefs as $column) {
                 $ids = DB::table($tableName)->pluck($column)->toArray();
-                $userIds = array_merge($userIds, $ids);
+                $tableIds = array_merge($tableIds, $ids);
             }
             
-            $userIds = array_unique(array_filter($userIds));
+            $tableIds = array_unique(array_filter($tableIds));
 
-            if (!empty($userIds)) {
-                $existingUsers = DB::table($tableName)->whereIn('id', $userIds)->pluck('id')->toArray();
-                $newUserIds = array_diff($userIds, $existingUsers);
+            if (!empty($tableIds)) {
+                $existingTables = DB::table($tableName)->whereIn('id', $tableIds)->pluck('id')->toArray();
+                $newtableIds = array_diff($tableIds, $existingTables);
 
-                if (!empty($newUserIds)) {
+                if (!empty($newtableIds)) {
                     $newUsers = array_map(function($userId) {
                         return ['id' => $userId];
-                    }, $newUserIds);
+                    }, $newtableIds);
                     DB::table($tableName)->insert($newUsers);
                 }
             }
