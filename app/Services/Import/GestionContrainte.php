@@ -17,6 +17,7 @@ class GestionContrainte
 
         preg_match_all('/`(\w+)` .*? NOT NULL/', $tableDefinition, $notNullMatches);
         foreach ($notNullMatches[1] as $column) {
+            if ($column === 'id') continue; // Ignore la colonne id
             $constraintsMap[$column][] = 'NOT NULL';
             DB::statement("ALTER TABLE $tableName MODIFY `$column` VARCHAR(255) NULL");
         }
@@ -25,6 +26,7 @@ class GestionContrainte
         foreach ($uniqueMatches[2] as $index => $columns) {
             $columnList = explode(',', str_replace('`', '', $columns));
             foreach ($columnList as $column) {
+                if ($column === 'id') continue; // Ignore la colonne id
                 $constraintsMap[$column][] = 'UNIQUE';
             }
             DB::statement("ALTER TABLE $tableName DROP INDEX " . $uniqueMatches[1][$index]);
@@ -56,6 +58,8 @@ class GestionContrainte
         }
 
         foreach ($constraintsMap as $column => $constraints) {
+            if ($column === 'id') continue; // Ignore la colonne id
+
             if (in_array('NOT NULL', $constraints) && isset($columnTypes[$column])) {
                 DB::statement("ALTER TABLE $tableName MODIFY `$column` {$columnTypes[$column]} NOT NULL");
             }
