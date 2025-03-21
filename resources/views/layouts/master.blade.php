@@ -172,7 +172,7 @@
             @endif
 
             @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
-                <a href="#" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
+                <a href="{{ route('generer.index') }}" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
                     <i class="fa fa-fa-tasks sidebar-icon"></i>
                     <span id="menu-txt">{{ __('Generer donnee') }}</span>
                 </a>
