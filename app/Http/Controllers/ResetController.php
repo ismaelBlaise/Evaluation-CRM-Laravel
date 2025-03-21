@@ -18,6 +18,7 @@ class ResetController extends Controller
     public function resetDatabase(): RedirectResponse
     {
         $this->resetService->resetDatabase();
-        return redirect()->route('dashboard')->with('success', 'Base de données réinitialisée avec succès.');
+        Session()->flash('flash_message_success', __('Base de données réinitialisée avec succès'));
+        return redirect()->back();
     }
 }
