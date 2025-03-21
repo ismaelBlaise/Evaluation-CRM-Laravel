@@ -45,7 +45,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('generate')->name('generate.')->group(function () {
         Route::get('/', 'GenerateData@index')->name('index');
-        Route::post('/generate', 'GenerateData@uploadCsv')->name('generate');
+        Route::post('/generate', 'GenerateData@generate')->name('generate');
     });
     /**
     * Roles
