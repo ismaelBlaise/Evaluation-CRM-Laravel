@@ -53,7 +53,9 @@ class PaymentsController extends Controller
             session()->flash('flash_message_warning', __("Can't add payment on Invoice"));
             return redirect()->route('invoices.show', $invoice->external_id);
         }
+
         
+
         $payment = Payment::create([
             'external_id' => Uuid::uuid4()->toString(),
             'amount' => $request->amount * 100,
@@ -64,10 +66,15 @@ class PaymentsController extends Controller
         ]);
         $api = Integration::initBillingIntegration();
         if ($api && $invoice->integration_invoice_id) {
-            $result = $api->createPayment($payment);
-            $payment->integration_payment_id = $result["Guid"];
-            $payment->integration_type = get_class($api);
-            $payment->save();
+            try {
+                $result = $api->createPayment($payment);
+                $payment->integration_payment_id = $result["Guid"];
+                $payment->integration_type = get_class($api);
+                $payment->save();
+            } catch (\Exception $e) {
+                session()->flash('flash_message_error', __($e->getMessage()));
+                return redirect()->route('invoices.show', $invoice->external_id);
+            }
         }
         app(GenerateInvoiceStatus::class, ['invoice' => $invoice])->createStatus();
 
