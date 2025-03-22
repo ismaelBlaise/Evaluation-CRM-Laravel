@@ -29,15 +29,7 @@ class PaymentRequest extends FormRequest
             'amount' => [
                 'regex:/^-?[0-9]+[.,]?[0-9]*+$/',
                 'required',
-                'not_in:0',
-                function ($attribute, $value, $fail) {
-                    $invoice = $this->route('invoice');
-                    if ($invoice && $value > $invoice->due_amount) {
-                        
-                        session()->flash('flash_message_warning', __('Le montant du paiement ne peut pas être supérieur au montant dû.'));
-                        $fail(__(""));
-                    }
-                },
+                'not_in:0'
             ],
             'payment_date' => 'date|required',
             'source' => ['required', PaymentSource::validationRules()],
