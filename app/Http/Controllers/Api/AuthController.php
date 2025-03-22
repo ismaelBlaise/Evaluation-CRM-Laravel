@@ -2,44 +2,49 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    
     public function login(Request $request)
     {
-        // Validation des données
-        $request->validate([
+        
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
-        // Vérification des identifiants
-        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json(['message' => 'Identifiants incorrects'], 401);
         }
 
-        // Récupérer l'utilisateur authentifié
+        
         $user = Auth::user();
-
-        // Créer un token d'API (Sanctum ou Passport)
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('Token-API')->accessToken;
 
         return response()->json([
             'message' => 'Connexion réussie',
-            'token' => $token,
-            'user' => $user
+            'user' => $user,
+            'token'=>$token
         ]);
     }
 
+   
     public function logout(Request $request)
     {
-        // Supprimer tous les tokens de l'utilisateur
-        $request->user()->tokens()->delete();
-
+        $request->user()->token()->revoke();
         return response()->json(['message' => 'Déconnexion réussie']);
     }
 }
+
+
