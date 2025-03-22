@@ -33,8 +33,9 @@ class PaymentRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $invoice = $this->route('invoice');
                     if ($invoice && $value > $invoice->due_amount) {
-                        // $fail(__());
+                        
                         session()->flash('flash_message_warning', __('Le montant du paiement ne peut pas être supérieur au montant dû.'));
+                        $fail(__(""));
                     }
                 },
             ],
