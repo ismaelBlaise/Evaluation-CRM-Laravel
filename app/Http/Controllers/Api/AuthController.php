@@ -28,7 +28,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Les identifiants sont incorrects'], 401);
         }
 
-        // Générer un token API pour l'utilisateur
+        
         $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
@@ -37,10 +37,10 @@ class AuthController extends Controller
         ]);
     }
 
-    // Déconnexion d'un utilisateur
+     
     public function logout(Request $request)
     {
-        // Révoquer le token de l'utilisateur actuel
+         
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Déconnexion réussie']);
