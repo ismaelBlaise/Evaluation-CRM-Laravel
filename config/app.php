@@ -128,7 +128,7 @@ return [
         Laravel\Tinker\TinkerServiceProvider::class,
         App\Zizaco\Entrust\EntrustServiceProvider::class,
         Laravel\Cashier\CashierServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
+        // Maatwebsite\Excel\ExcelServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -170,7 +170,7 @@ return [
         'Lang'      => Illuminate\Support\Facades\Lang::class,
         'Log'       => Illuminate\Support\Facades\Log::class,
         'Mail'      => Illuminate\Support\Facades\Mail::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        // 'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Password'  => Illuminate\Support\Facades\Password::class,
         'Queue'     => Illuminate\Support\Facades\Queue::class,
         'Redirect'  => Illuminate\Support\Facades\Redirect::class,
