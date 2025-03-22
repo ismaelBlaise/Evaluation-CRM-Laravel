@@ -30,11 +30,12 @@ class AuthController extends Controller
 
         
         $user = Auth::user();
-        // $token = $user->createToken('Token-API')->accessToken;
+        $token = $user->createToken('Token-API')->accessToken;
 
         return response()->json([
             'message' => 'Connexion réussie',
-            'user' => $user
+            'user' => $user,
+            'token'=>$token
         ]);
     }
 
