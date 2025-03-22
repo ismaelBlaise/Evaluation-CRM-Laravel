@@ -18,3 +18,6 @@ Route::group(['namespace' => 'App\Api\v1\Controllers'], function () {
         Route::get('users', ['uses' => 'UserController@index']);
     });
 });
+
+Route::post('/login-api', 'AuthController@login');
+Route::middleware('auth:sanctum')->post('/logout-api', 'AuthController@logout');

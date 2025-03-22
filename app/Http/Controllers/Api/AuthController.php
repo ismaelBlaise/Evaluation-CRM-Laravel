@@ -6,39 +6,42 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Validation des données
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
         ]);
 
-        // Vérification des identifiants
-        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return response()->json(['message' => 'Identifiants incorrects'], 401);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
         }
 
-        // Récupérer l'utilisateur authentifié
-        $user = Auth::user();
+        $user = User::where('email', $request->email)->first();
 
-        // Créer un token d'API (Sanctum ou Passport)
-        $token = $user->createToken('auth_token')->plainTextToken;
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Les identifiants sont incorrects'], 401);
+        }
+
+        // Générer un token API pour l'utilisateur
+        $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Connexion réussie',
+            'user' => $user,
             'token' => $token,
-            'user' => $user
         ]);
     }
 
+    // Déconnexion d'un utilisateur
     public function logout(Request $request)
     {
-        // Supprimer tous les tokens de l'utilisateur
-        $request->user()->tokens()->delete();
+        // Révoquer le token de l'utilisateur actuel
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Déconnexion réussie']);
     }
