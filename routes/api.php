@@ -3,6 +3,11 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DefaultController;
+use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\OfferController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProjetController;
+use App\Http\Controllers\Api\TaskController;
 use Illuminate\Http\Request;
 
 /*
@@ -28,3 +33,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api'
 
 
 Route::get('/clients', [ClientController::class, 'data']);
+Route::get('/projects', [ProjetController::class, 'data']);
+Route::get('/tasks', [TaskController::class, 'data']);
+Route::get('/offers', [OfferController::class, 'data']);
+Route::get('/invoices', [InvoiceController::class, 'data']);
+Route::get('/payments', [PaymentController::class, 'data']);
+
