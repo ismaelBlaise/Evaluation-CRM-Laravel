@@ -64,7 +64,7 @@ class PaymentsController extends Controller
         
         // Vérification si le montant payé dépasse le montant dû
         if ($amountDue->getBigDecimalAmount() < $request->amount) {
-            session()->flash('flash_message_warning', __("The payment amount exceeds the amount due on the invoice"));
+            session()->flash('flash_message_warning', __("Le montant du paiement ne peut pas être supérieur au montant dû."));
             return redirect()->route('invoices.show', $invoice->external_id);
             // return redirect()->back();
         }
