@@ -193,4 +193,5 @@ class User extends Authenticatable
 
         return collect(['keys' => $keys, 'counts' => $counts]);
     }
+
 }
