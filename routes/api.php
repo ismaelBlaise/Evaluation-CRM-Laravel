@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DefaultController;
 use Illuminate\Http\Request;
 
@@ -26,4 +27,4 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 
-Route::get('/default', [DefaultController::class, 'index']);
+Route::get('/clients', [ClientController::class, 'data']);
