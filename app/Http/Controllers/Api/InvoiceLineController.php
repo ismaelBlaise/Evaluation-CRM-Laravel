@@ -8,10 +8,18 @@ use Illuminate\Http\Request;
 
 class InvoiceLineController extends Controller
 {
-    public function data(){
+    public function data(Request $request)
+    {
+        // Récupérer le nombre d'éléments par page (10 par défaut)
+        $perPage = $request->query('per_page', 10);
+
+        return response()->json(InvoiceLine::paginate($perPage));
+    }
+
+    public function nbdata()
+    {
         return response()->json([
-            "invoice_lines"=>InvoiceLine::all(),
-            "nb_invoice_lines"=>InvoiceLine::count()
+            "nb_invoice_lines" => InvoiceLine::count()
         ]);
     }
 }

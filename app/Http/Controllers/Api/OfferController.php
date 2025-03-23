@@ -8,10 +8,18 @@ use Illuminate\Http\Request;
 
 class OfferController extends Controller
 {
-    public function data(){
+    public function data(Request $request)
+    {
+        // Récupérer le nombre d'éléments par page (10 par défaut)
+        $perPage = $request->query('per_page', 10);
+
+        return response()->json(Offer::paginate($perPage));
+    }
+
+    public function nbdata()
+    {
         return response()->json([
-            "offers"=>Offer::all(),
-            "nb_offers"=>Offer::count()
+            "nb_offers" => Offer::count()
         ]);
     }
 }

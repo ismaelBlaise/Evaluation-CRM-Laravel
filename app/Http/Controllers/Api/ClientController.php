@@ -8,10 +8,18 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    public function data(){
+    public function data(Request $request)
+    {
+         
+        $perPage = $request->query('per_page', 10);
+
+        return response()->json(Client::paginate($perPage));
+    }
+
+    public function nbdata()
+    {
         return response()->json([
-            "clients"=>Client::all(),
-            "nb_clients"=>Client::count()
+            "nb_clients" => Client::count()
         ]);
     }
 }

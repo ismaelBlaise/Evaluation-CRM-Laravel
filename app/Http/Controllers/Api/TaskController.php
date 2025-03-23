@@ -8,10 +8,19 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function data(){
+    public function data(Request $request)
+    {
+        // Récupérer le nombre d'éléments par page (10 par défaut)
+        $perPage = $request->query('per_page', 10);
+
+        // Retourner les tâches avec pagination
+        return response()->json(Task::paginate($perPage));
+    }
+
+    public function nbdata()
+    {
         return response()->json([
-            "tasks"=>Task::all(),
-            "nb_tasks"=>Task::count()
+            "nb_tasks" => Task::count()
         ]);
     }
 }
