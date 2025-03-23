@@ -52,7 +52,7 @@ class PaymentController extends Controller
                             ->sum('amount');   
     
              
-            $revenueData[$monthKey] = $revenue;
+            $revenueData[$monthKey] = intval($revenue);
     
              
             $currentDate->subMonth();
