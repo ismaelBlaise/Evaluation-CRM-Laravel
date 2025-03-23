@@ -42,3 +42,11 @@ Route::get('/payments', [PaymentController::class, 'data']);
 Route::get('/invoice-lines', [InvoiceLineController::class, 'data']);
 
 
+
+Route::get('/clients/nb', [ClientController::class, 'nbdata']);
+Route::get('/projects/nb', [ProjetController::class, 'nbdata']);
+Route::get('/tasks/nb', [TaskController::class, 'nbdata']);
+Route::get('/offers/nb', [OfferController::class, 'nbdata']);
+Route::get('/invoices/nb', [InvoiceController::class, 'nbdata']);
+Route::get('/payments/nb', [PaymentController::class, 'nbdata']);
+Route::get('/invoice-lines/nb', [InvoiceLineController::class, 'nbdata']);
