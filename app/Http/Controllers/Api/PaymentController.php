@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use App\Models\Payment;
+use App\Services\Invoice\InvoiceCalculator;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -27,7 +29,7 @@ class PaymentController extends Controller
     public function sumpayment()
     {
         return response()->json([
-            "sum_payments" =>doubleval( Payment::sum("amount"))
+            "sum_payments" =>doubleval( Payment::sum("amount"))/100
         ]);
     }
 
@@ -49,7 +51,7 @@ class PaymentController extends Controller
     
             
             $revenue = Payment::whereBetween('payment_date', [$monthStart, $monthEnd])
-                            ->sum('amount');   
+                            ->sum('amount')/100;   
     
              
             $revenueData[$monthKey] = intval($revenue);
@@ -62,5 +64,37 @@ class PaymentController extends Controller
         return response()->json($revenueData);
     }
     
+
+
+    public function updateAmount(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0', 
+        ]);
+        $payment = Payment::find($id);
+
+        if (!$payment) {
+            return response()->json([
+                'message' => 'Payment not found'
+            ], 404);
+        }
+        $invoice=Invoice::find($payment->invoice_id);
+        $invoiceCalculator = new InvoiceCalculator($invoice);
+        $totalPrice = $invoiceCalculator->getTotalPrice();
+        $subPrice = $invoiceCalculator->getSubTotal();
+        $vatPrice = $invoiceCalculator->getVatTotal();
+        $amountDue = $invoiceCalculator->getAmountDue();
+        
+
+        $payment->amount = $validated['amount'] * 100; 
+        $payment->updated_at=Carbon::now();
+        $payment->save();
+
+        return response()->json([
+            'message' => 'Payment amount updated successfully',
+            'payment' => $payment
+        ]);
+    }
+
 
 }

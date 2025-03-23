@@ -69,6 +69,8 @@ Route::prefix('payments')->group(function () {
     Route::get('/nb', [PaymentController::class, 'nbdata']);
     Route::get('/sum', [PaymentController::class, 'sumpayment']);
     Route::get('/chart', [PaymentController::class,'monthlyRevenueChart']);
+    Route::post('/update/{id}', [PaymentController::class, 'updateAmount']);
+
 });
 
 // Invoice Line Routes
