@@ -24,37 +24,43 @@ class PaymentController extends Controller
         ]);
     }
 
+    public function sumpayment()
+    {
+        return response()->json([
+            "sum_payments" => Payment::sum("amount")
+        ]);
+    }
+
 
 
     public function monthlyRevenueChart()
     {
         $currentDate = Carbon::now();
-
-        $months = [];
-        $revenues = [];
-
-      
+    
+        $revenueData = [];   
         for ($i = 0; $i < 12; $i++) {
             
-            $monthStart = $currentDate->copy()->startOfMonth();  
-            $monthEnd = $currentDate->copy()->endOfMonth();  
+            $monthStart = $currentDate->copy()->startOfMonth()->toDateString();  
+            $monthEnd = $currentDate->copy()->endOfMonth()->toDateString();
 
-             
-            $months[] = $monthStart->format('F Y');  
-
+    
+            // return response()->json($monthStart);
+            $monthKey =$currentDate->copy()->startOfMonth()->format('F Y');  
+    
+            
             $revenue = Payment::whereBetween('payment_date', [$monthStart, $monthEnd])
                             ->sum('amount');   
-
-            $revenues[] = $revenue;
-
+    
+             
+            $revenueData[$monthKey] = $revenue;
+    
+             
             $currentDate->subMonth();
         }
-
-        return response()->json([
-            'months' => $months,
-            'revenues' => $revenues
-        ]);
+    
+        $revenueData = array_reverse($revenueData);
+        return response()->json($revenueData);
     }
-
+    
 
 }

@@ -66,6 +66,7 @@ Route::prefix('invoices')->group(function () {
 Route::prefix('payments')->group(function () {
     Route::get('/', [PaymentController::class, 'data']);
     Route::get('/nb', [PaymentController::class, 'nbdata']);
+    Route::get('/sum', [PaymentController::class, 'sumpayment']);
     Route::get('/chart', [PaymentController::class,'monthlyRevenueChart']);
 });
 
