@@ -27,7 +27,7 @@ class PaymentController extends Controller
     public function sumpayment()
     {
         return response()->json([
-            "sum_payments" => Payment::sum("amount")
+            "sum_payments" =>doubleval( Payment::sum("amount"))
         ]);
     }
 
