@@ -3,23 +3,24 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Client;
+use App\Models\Task;
 use Illuminate\Http\Request;
 
-class ClientController extends Controller
+class TaskController extends Controller
 {
     public function data(Request $request)
     {
-         
+        // Récupérer le nombre d'éléments par page (10 par défaut)
         $perPage = $request->query('per_page', 10);
 
-        return response()->json(Client::paginate($perPage));
+        // Retourner les tâches avec pagination
+        return response()->json(Task::paginate($perPage));
     }
 
     public function nbdata()
     {
         return response()->json([
-            "nb_clients" => Client::count()
+            "nb_tasks" => Task::count()
         ]);
     }
 }
