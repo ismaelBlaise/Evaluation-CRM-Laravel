@@ -24,32 +24,34 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function invoicePaymentSummary()
+    public function invoicePaymentSummary($annee=null)
     {
         $totalPaid = 0;
         $totalUnpaid = 0;
-
-        
-        
-        $invoices = Invoice::all();
-
+    
+        if (!$annee) {
+            $annee = date('Y');
+        }
+        $invoices = Invoice::whereYear('created_at', $annee)->get();
+    
         foreach ($invoices as $invoice) {
             $invoiceCalculator = new InvoiceCalculator($invoice);
             $amountDue = $invoiceCalculator->getAmountDue(); 
             $totalPayments = $invoice->payments()->sum('amount');  
-
+    
             if ($amountDue->getBigDecimalAmount() == 0) {
                 $totalPaid += $totalPayments;  
             } else {
                 $totalUnpaid += $amountDue->getBigDecimalAmount(); 
             }
         }
-
+    
         return response()->json([
             'total_paid' => $totalPaid,
             'total_unpaid' => $totalUnpaid,
         ]);
     }
+    
 
 
 }

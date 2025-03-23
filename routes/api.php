@@ -60,7 +60,7 @@ Route::prefix('offers')->group(function () {
 Route::prefix('invoices')->group(function () {
     Route::get('/', [InvoiceController::class, 'data']);
     Route::get('/nb', [InvoiceController::class, 'nbdata']);
-    Route::get('/chart', [InvoiceController::class, 'invoicePaymentSummary']);
+    Route::get('/chart/{annee?}', [InvoiceController::class, 'invoicePaymentSummary']);
 });
 
 // Payment Routes
