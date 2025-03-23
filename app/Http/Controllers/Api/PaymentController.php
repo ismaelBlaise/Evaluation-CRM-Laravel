@@ -87,12 +87,32 @@ class PaymentController extends Controller
         
 
         $payment->amount = $validated['amount'] * 100; 
-        $payment->updated_at=Carbon::now();
-        $payment->save();
+        // $payment->updated_at=Carbon::now();
+        $payment->update();
 
         return response()->json([
             'message' => 'Payment amount updated successfully',
             'payment' => $payment
+        ]);
+    }
+
+
+    public function deletePayment(Request $request, $id)
+    {
+        
+        $payment = Payment::find($id);
+
+        if (!$payment) {
+            return response()->json([
+                'message' => 'Payment not found'
+            ], 404);
+        }
+        
+        $payment->delete();
+        
+
+        return response()->json([
+            'message' => 'Payment amount deleted successfully'
         ]);
     }
 

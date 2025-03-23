@@ -70,7 +70,7 @@ Route::prefix('payments')->group(function () {
     Route::get('/sum', [PaymentController::class, 'sumpayment']);
     Route::get('/chart', [PaymentController::class,'monthlyRevenueChart']);
     Route::post('/update/{id}', [PaymentController::class, 'updateAmount']);
-
+    Route::get('/delete/{id}', [PaymentController::class, 'deletePayment']);
 });
 
 // Invoice Line Routes
