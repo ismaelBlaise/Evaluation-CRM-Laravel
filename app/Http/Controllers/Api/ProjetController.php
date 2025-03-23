@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class ProjetController extends Controller
@@ -23,4 +24,22 @@ class ProjetController extends Controller
             "nb_projects" => Project::count()
         ]);
     }
+
+
+    public function getProjectCountByStatus()
+    {
+         
+        $projectCounts = Project::select('status_id', \DB::raw('count(*) as total'))
+            ->groupBy('status_id')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                 
+                $status = Status::find($item->status_id);
+                return [$status ? $status->title : 'Unknown' => $item->total];
+            });
+
+         
+        return response()->json($projectCounts);
+    }
+
 }
