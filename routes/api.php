@@ -69,6 +69,8 @@ Route::prefix('payments')->group(function () {
     Route::get('/nb', [PaymentController::class, 'nbdata']);
     Route::get('/sum', [PaymentController::class, 'sumpayment']);
     Route::get('/chart', [PaymentController::class,'monthlyRevenueChart']);
+    Route::post('/update/{id}', [PaymentController::class, 'updateAmount']);
+    Route::get('/delete/{id}', [PaymentController::class, 'deletePayment']);
 });
 
 // Invoice Line Routes
@@ -78,7 +80,8 @@ Route::prefix('invoice-lines')->group(function () {
 });
 
 Route::prefix('status')->group(function () {
-    Route::get('/', [StatusController::class, 'data']);
+    Route::get('/projects', [StatusController::class, 'dataProjects']);
+    Route::get('/tasks', [StatusController::class, 'dataTasks']);
     
 });
 

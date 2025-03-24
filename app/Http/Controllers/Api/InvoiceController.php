@@ -58,7 +58,7 @@ class InvoiceController extends Controller
 
         return response()->json([
             'total_paid' => $totalPaid/100,
-            'total_unpaid' => $totalUnpaid/100,
+            'total_unpaid' => $totalUnpaid,
         ]);
     }
 
