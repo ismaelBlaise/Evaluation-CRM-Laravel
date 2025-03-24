@@ -27,7 +27,7 @@ class InvoiceCalculator
         $this->tax = new Tax();
         $this->invoice = $invoice;
 
-        $this->discount = $this->remise?? 0;
+        $this->discount = $invoice->remise?? 0;
     }
 
     public function getVatTotal()
@@ -47,6 +47,19 @@ class InvoiceCalculator
         }
 
         $price=$price-($price*$this->discount);
+        return new Money($price);
+    }
+
+    public function getTotalPrice2(): Money
+    {
+        $price = 0;
+        $invoiceLines = $this->invoice->invoiceLines;
+
+        foreach ($invoiceLines as $invoiceLine) {
+            $price += $invoiceLine->quantity * $invoiceLine->price;
+        }
+
+        // $price=$price-($price*$this->discount);
         return new Money($price);
     }
 

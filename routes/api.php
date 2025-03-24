@@ -87,6 +87,6 @@ Route::prefix('status')->group(function () {
     
 });
 
-Route::post('/configuration', [ConfigurationController::class, 'insert'])->middleware('auth:api');
+Route::post('/configuration', [ConfigurationController::class, 'insert']);
 
 

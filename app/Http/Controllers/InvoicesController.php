@@ -79,6 +79,7 @@ class InvoicesController extends Controller
 
         $invoiceCalculator = new InvoiceCalculator($invoice);
         $totalPrice = $invoiceCalculator->getTotalPrice();
+        $totalPrice2 = $invoiceCalculator->getTotalPrice2();
         $subPrice = $invoiceCalculator->getSubTotal();
         $vatPrice = $invoiceCalculator->getVatTotal();
         $amountDue = $invoiceCalculator->getAmountDue();
@@ -88,6 +89,7 @@ class InvoicesController extends Controller
             ->withApiconnected($apiConnected)
             ->withContacts($invoiceContacts)
             ->withfinalPrice(app(MoneyConverter::class, ['money' => $totalPrice])->format())
+            ->withfinalPrice2(app(MoneyConverter::class, ['money' => $totalPrice2])->format())
             ->withsubPrice(app(MoneyConverter::class, ['money' => $subPrice])->format())
             ->withVatPrice(app(MoneyConverter::class, ['money' => $vatPrice])->format())
             ->withAmountDueFormatted(app(MoneyConverter::class, ['money' => $amountDue])->format())

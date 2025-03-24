@@ -15,7 +15,7 @@ class CreateConfigurationsTable extends Migration
     {
         Schema::create('configurations', function (Blueprint $table) {
             $table->id();
-            $table->decimal('remise_global',5,2)->default(0);
+            $table->decimal('remise_globale',5,2)->default(0);
             $table->timestamps();
         });
     }

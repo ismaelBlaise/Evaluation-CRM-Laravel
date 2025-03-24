@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Configuration extends Model
 {
-    protected $fillable = ['remise_global'];
+    protected $fillable = ['remise_globale'];
 
     public static function getRemiseGlobale(){
         $config=self::first();

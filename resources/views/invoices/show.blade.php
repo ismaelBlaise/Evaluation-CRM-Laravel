@@ -91,10 +91,22 @@
                                     </div>
                                 </div>
                             </div>
-                        <!-- Total price--->
+                            
                             <div class="tablet__item" style="padding: 0;">
                                 <div class="tablet__item__info">
-                                    <span class="final-price">@lang('Total')</span>
+                                    <span class="final-price">@lang('Total sans remise')</span>
+                                </div>
+                                <div class="tablet__item__toolbar">
+                                    <div class="dropdown dropdown-inline">
+                                        <span class="final-price">{{$finalPrice2}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Total price--->
+                            <div class="tablet__item" style="padding: 0;">
+                                <div class="tablet__item__info">
+                                    <span class="final-price">@lang('Total avec remise')</span>
                                 </div>
                                 <div class="tablet__item__toolbar">
                                     <div class="dropdown dropdown-inline">

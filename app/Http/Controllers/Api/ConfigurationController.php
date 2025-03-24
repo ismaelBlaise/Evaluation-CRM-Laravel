@@ -17,7 +17,7 @@ class ConfigurationController extends Controller
             $validated = $request->validate([
                 'remise_globale' => 'required|numeric|min:0|max:100',
             ]);
-
+            
             $configuration = Configuration::create([
                 'remise_globale' => $validated['remise_globale'],
                 'created_at' => Carbon::now(),
