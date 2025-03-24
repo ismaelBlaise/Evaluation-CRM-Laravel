@@ -80,7 +80,8 @@ Route::prefix('invoice-lines')->group(function () {
 });
 
 Route::prefix('status')->group(function () {
-    Route::get('/', [StatusController::class, 'data']);
+    Route::get('/projects', [StatusController::class, 'dataProjects']);
+    Route::get('/tasks', [StatusController::class, 'dataTasks']);
     
 });
 
