@@ -43,7 +43,12 @@ class PaymentsController extends Controller
             $api->deletePayment($payment);
         }
 
+        $inv_id=$payment->invoice_id;
         $payment->delete();
+        $invoice = Invoice::find($inv_id);
+        app(GenerateInvoiceStatus::class, ['invoice' => $invoice])->createStatus();
+
+        
         session()->flash('flash_message', __('Payment successfully deleted'));
         return redirect()->back();
     }

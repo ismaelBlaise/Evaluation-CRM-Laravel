@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\ConfigurationController;
 use App\Http\Controllers\Api\DefaultController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\InvoiceLineController;
@@ -70,6 +71,7 @@ Route::prefix('payments')->group(function () {
     Route::get('/sum', [PaymentController::class, 'sumpayment']);
     Route::get('/chart', [PaymentController::class,'monthlyRevenueChart']);
     Route::post('/update/{id}', [PaymentController::class, 'updateAmount']);
+    Route::post('/update-2/{id}', [PaymentController::class, 'update']);
     Route::get('/delete/{id}', [PaymentController::class, 'deletePayment']);
 });
 
@@ -84,4 +86,7 @@ Route::prefix('status')->group(function () {
     Route::get('/tasks', [StatusController::class, 'dataTasks']);
     
 });
+
+Route::post('/configuration', [ConfigurationController::class, 'insert']);
+
 

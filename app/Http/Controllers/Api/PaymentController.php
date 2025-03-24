@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Services\Invoice\GenerateInvoiceStatus;
 use App\Services\Invoice\InvoiceCalculator;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 class PaymentController extends Controller
 {
@@ -95,7 +97,62 @@ class PaymentController extends Controller
             'payment' => $payment
         ]);
     }
+    
 
+    public function update(Request $request, $id): JsonResponse
+    {
+        try {
+            $request->validate([
+                'amount' => 'required|numeric|min:0',
+            ]);
+
+            $payment = Payment::find($id);
+
+            if (!$payment) {
+                return response()->json(['error' => 'Paiement introuvable'], 404);
+            }
+
+            $invoice = Invoice::find($payment->invoice_id);
+
+            if (!$invoice) {
+                return response()->json(['error' => 'Facture introuvable'], 404);
+            }
+
+            if (!$invoice->isSent()) {
+                return response()->json([
+                    'error' => "Impossible de modifier un paiement sur une facture non envoyée."
+                ], 400);
+            }
+
+            $totalPaid = Payment::where('invoice_id', $invoice->id)
+                            ->where('id', '!=', $id)
+                            ->whereNull('deleted_at')
+                            ->sum('amount');
+
+            $invoiceCalculator = new InvoiceCalculator($invoice);
+            $invoiceTotal = $invoiceCalculator->getTotalPrice()->getAmount();
+
+            $newAmount = $request->input('amount') * 100;
+
+            if (($totalPaid + $newAmount) > $invoiceTotal) {
+                return response()->json([
+                    'error' => sprintf(
+                        "Le montant du paiement (%.2f) depasse le solde restant a payer.",
+                        $newAmount / 100
+                    )
+                ], 400);
+            }
+
+            $payment->amount = $newAmount;
+            $payment->save();
+            app(GenerateInvoiceStatus::class, ['invoice' => $invoice])->createStatus();
+
+            return response()->json(['message' => 'Paiement mis à jour avec succès'], 200);
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function deletePayment(Request $request, $id)
     {
@@ -107,9 +164,11 @@ class PaymentController extends Controller
                 'message' => 'Payment not found'
             ], 404);
         }
-        
+        $invoice_id=$payment->invoice_id;
         $payment->delete();
         
+        $invoice = Invoice::find($invoice_id);
+            app(GenerateInvoiceStatus::class, ['invoice' => $invoice])->createStatus();
 
         return response()->json([
             'message' => 'Payment amount deleted successfully'

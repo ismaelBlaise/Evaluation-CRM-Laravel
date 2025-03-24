@@ -26,6 +26,7 @@ use App\Repositories\Currency\Currency;
 use App\Repositories\Money\MoneyConverter;
 use App\Services\Invoice\InvoiceCalculator;
 use App\Http\Requests\Invoice\AddInvoiceLine;
+use App\Models\Configuration;
 use App\Models\Offer;
 use App\Models\Product;
 use App\Services\InvoiceNumber\InvoiceNumberService;
@@ -78,15 +79,18 @@ class InvoicesController extends Controller
 
         $invoiceCalculator = new InvoiceCalculator($invoice);
         $totalPrice = $invoiceCalculator->getTotalPrice();
+        $totalPrice2 = $invoiceCalculator->getTotalPrice2();
         $subPrice = $invoiceCalculator->getSubTotal();
         $vatPrice = $invoiceCalculator->getVatTotal();
         $amountDue = $invoiceCalculator->getAmountDue();
         
         return view('invoices.show')
             ->withInvoice($invoice)
+            ->withRemise($invoice->remise)
             ->withApiconnected($apiConnected)
             ->withContacts($invoiceContacts)
             ->withfinalPrice(app(MoneyConverter::class, ['money' => $totalPrice])->format())
+            ->withfinalPrice2(app(MoneyConverter::class, ['money' => $totalPrice2])->format())
             ->withsubPrice(app(MoneyConverter::class, ['money' => $subPrice])->format())
             ->withVatPrice(app(MoneyConverter::class, ['money' => $vatPrice])->format())
             ->withAmountDueFormatted(app(MoneyConverter::class, ['money' => $amountDue])->format())
@@ -115,6 +119,12 @@ class InvoicesController extends Controller
         if ($invoice->isSent()) {
             session()->flash('flash_message_warning', __('Invoice already sent'));
             return redirect()->route('invoices.show', $external_id);
+        }
+
+        $applyDiscount=$request->has('applyDiscount') && $request->applyDiscount==1;
+        if($applyDiscount){
+            $discountPercentage=Configuration::getRemiseGlobale();
+            $invoice->remise=$discountPercentage;
         }
 
         $result = $invoice->invoice($request->invoiceContact);
