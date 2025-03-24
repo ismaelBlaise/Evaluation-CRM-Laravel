@@ -142,7 +142,7 @@ class PaymentController extends Controller
                     )
                 ], 400);
             }
-
+            
             $payment->amount = $newAmount;
             $payment->save();
             app(GenerateInvoiceStatus::class, ['invoice' => $invoice])->createStatus();
