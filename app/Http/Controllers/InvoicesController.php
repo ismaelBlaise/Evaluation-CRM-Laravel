@@ -26,6 +26,7 @@ use App\Repositories\Currency\Currency;
 use App\Repositories\Money\MoneyConverter;
 use App\Services\Invoice\InvoiceCalculator;
 use App\Http\Requests\Invoice\AddInvoiceLine;
+use App\Models\Configuration;
 use App\Models\Offer;
 use App\Models\Product;
 use App\Services\InvoiceNumber\InvoiceNumberService;
@@ -115,6 +116,12 @@ class InvoicesController extends Controller
         if ($invoice->isSent()) {
             session()->flash('flash_message_warning', __('Invoice already sent'));
             return redirect()->route('invoices.show', $external_id);
+        }
+
+        $applyDiscount=$request->has('applyDiscount') && $request->applyDiscount==1;
+        if($applyDiscount){
+            $discountPercentage=Configuration::getRemiseGlobale();
+            $invoice->remise=$discountPercentage;
         }
 
         $result = $invoice->invoice($request->invoiceContact);
