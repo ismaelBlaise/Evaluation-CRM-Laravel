@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Services\Invoice\GenerateInvoiceStatus;
 use App\Services\Invoice\InvoiceCalculator;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -144,6 +145,7 @@ class PaymentController extends Controller
 
             $payment->amount = $newAmount;
             $payment->save();
+            app(GenerateInvoiceStatus::class, ['invoice' => $invoice])->createStatus();
 
             return response()->json(['message' => 'Paiement mis à jour avec succès'], 200);
         }
@@ -162,9 +164,11 @@ class PaymentController extends Controller
                 'message' => 'Payment not found'
             ], 404);
         }
-        
+        $invoice_id=$payment->invoice_id;
         $payment->delete();
         
+        $invoice = Invoice::find($invoice_id);
+            app(GenerateInvoiceStatus::class, ['invoice' => $invoice])->createStatus();
 
         return response()->json([
             'message' => 'Payment amount deleted successfully'
