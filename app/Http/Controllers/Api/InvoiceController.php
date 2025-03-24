@@ -42,18 +42,16 @@ class InvoiceController extends Controller
         // Filtrer les factures en fonction de l'année et du mois
         $invoices = Invoice::whereYear('created_at', $annee)
                         ->whereMonth('created_at', $mois)
-                        ->get();
+                    ->get();
 
         foreach ($invoices as $invoice) {
             $invoiceCalculator = new InvoiceCalculator($invoice);
             $amountDue = $invoiceCalculator->getAmountDue(); 
-            $totalPayments = $invoice->payments()->sum('amount');  
-
-            if ($amountDue->getBigDecimalAmount() == 0) {
-                $totalPaid += $totalPayments;  
-            } else {
+            $totalPayments = $invoice->payments()->sum('amount');
+            $totalPaid += $totalPayments;
+            if ($amountDue->getBigDecimalAmount() != 0) {
                 $totalUnpaid += $amountDue->getBigDecimalAmount(); 
-            }
+            } 
         }
 
         return response()->json([

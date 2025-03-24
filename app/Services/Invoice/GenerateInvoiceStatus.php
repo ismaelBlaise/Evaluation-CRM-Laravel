@@ -4,6 +4,7 @@ namespace App\Services\Invoice;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
 use App\Repositories\Money\Money;
+use Illuminate\Support\Facades\Log;
 
 class GenerateInvoiceStatus
 {
@@ -16,11 +17,16 @@ class GenerateInvoiceStatus
     /** @var int  */
     private $sum;
 
+    private $remise;
+
     public function __construct(Invoice $invoice)
-    {
+    {   
+        $calculator=app(InvoiceCalculator::class, ['invoice' => $invoice]);
         $this->invoice = $invoice;
-        $this->price = app(InvoiceCalculator::class, ['invoice' => $invoice])->getTotalPrice();
+        $this->price = $calculator->getTotalPrice();
         $this->sum = (int)$this->invoice->payments()->sum('amount');
+        $this->remise=$calculator->getRemise();
+
     }
 
     public function createStatus()
@@ -55,14 +61,17 @@ class GenerateInvoiceStatus
     }
 
     public function isPartialPaid(): bool
-    {
+    {   
         return $this->sum < $this->price->getAmount() && $this->sum > 0;
     }
 
     public function isPaid(): bool
     {
-        return $this->price->getAmount() === $this->sum;
+        // Log::error('Comparaison: ' . var_export($this->sum === $this->price->getAmount(), true) . ' | sum: ' . $this->sum . ' | price: ' . $this->price->getAmount());
+        
+        return $this->price->getAmount() == $this->sum;
     }
+    
 
     public function isUnPaid(): bool
     {

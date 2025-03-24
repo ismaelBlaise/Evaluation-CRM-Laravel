@@ -30,6 +30,10 @@ class InvoiceCalculator
         $this->discount = $invoice->remise?? 0;
     }
 
+    public function getRemise(){
+        return $this->discount;
+    }
+
     public function getVatTotal()
     {
         $price = $this->getSubTotal()->getAmount();

@@ -86,6 +86,7 @@ class InvoicesController extends Controller
         
         return view('invoices.show')
             ->withInvoice($invoice)
+            ->withRemise($invoice->remise)
             ->withApiconnected($apiConnected)
             ->withContacts($invoiceContacts)
             ->withfinalPrice(app(MoneyConverter::class, ['money' => $totalPrice])->format())
