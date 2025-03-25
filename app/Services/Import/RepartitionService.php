@@ -231,7 +231,10 @@ class RepartitionService
                     
                 }
 
-                $invoiceLine= InvoiceLine::where('product_id', $product->id)->where('offer_id',$offer->id)->first();
+                $invoiceLine = InvoiceLine::where('product_id', $product->id)
+                ->where('offer_id', $offer->id)
+                ->whereNull('invoice_id') // Équivalent de where('invoice_id', null)
+                ->first();
                 if(!$invoiceLine){
                     $invoiceLine = InvoiceLine::create([
                         'title' => $product->name,
@@ -255,14 +258,11 @@ class RepartitionService
                     $invoice->status = InvoiceStatus::draft()->getStatus();
                     $invoice->save();
                     
-                    $lines = $offer->invoiceLines;
-                    $newLines = collect();
-                    foreach($lines as $invoiceLine) {
-                        $invoiceLine->offer_id = null;
-                        $newLines->push(InvoiceLine::make($invoiceLine->toArray()));
-                    }
-            
-                    $invoice->invoiceLines()->saveMany($newLines);
+                    
+                    $invoiceLine->offer_id = null;
+                    $invoiceLine->invoice_id = $invoice->id;
+                    $newInvoiceLine=InvoiceLine::create($invoiceLine->toArray());
+
                 }
     
                  
