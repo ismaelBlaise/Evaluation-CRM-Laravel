@@ -173,7 +173,7 @@ class RepartitionService
                         'is_primary' => true
                     ]);
     
-                    event(new ClientAction($client, ClientsController::CREATED));
+                    // event(new ClientAction($client, ClientsController::CREATED));
                 }
     
                 
@@ -185,7 +185,7 @@ class RepartitionService
                     $lead = Lead::create([
                         'title' => $tempOffer->lead_title,
                         'description' => 'Description fictive',
-                        'user_assigned_id' => $client->user_id,
+                        'user_assigned_id' => auth()->id(),
                         'deadline' => now()->addDays(15),
                         'status_id' => 1,
                         'user_created_id' => auth()->id(),
@@ -210,7 +210,7 @@ class RepartitionService
                 }
     
                 
-                $offer = Offer::where('source_type', Lead::class)
+                $offer = Offer::where('source_type', "App\Models\Lead")
                             ->where('source_id', $lead->id)
                             ->where('client_id', $client->id)
                             ->first();
@@ -222,17 +222,6 @@ class RepartitionService
                         'external_id' => Uuid::uuid4()->toString(),
                         'source_id' => $lead->id,
                         'source_type' => Lead::class
-                    ]);
-    
-                     
-                    $invoiceLine = InvoiceLine::create([
-                        'title' => $product->name,
-                        'type' => $product->default_type,
-                        'quantity' => $tempOffer->quantite,
-                        'comment' => '',
-                        'price' => $tempOffer->prix * 100,
-                        'product_id' => $product->id,
-                        'offer_id' => $offer->id
                     ]);
     
                      
@@ -253,6 +242,16 @@ class RepartitionService
                         });
                     }
                 }
+
+                $invoiceLine = InvoiceLine::create([
+                    'title' => $product->name,
+                    'type' => $product->default_type,
+                    'quantity' => $tempOffer->quantite,
+                    'comment' => '',
+                    'price' => $tempOffer->prix * 100,
+                    'product_id' => $product->id,
+                    'offer_id' => $offer->id
+                ]);
     
                  
                 $tempOffer->delete();
