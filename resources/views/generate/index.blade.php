@@ -15,7 +15,7 @@
     <div class="row">
         @php
             $tables = [
-                'leads', 'comments', 'mails', 'tasks', 'projects', 
+                'leads', 'users', 'mails', 'tasks', 'projects', 
                 'absences', 'contacts', 'invoice_lines', 'appointments', 
                 'payements', 'invoices', 'offers', 'clients'
             ];

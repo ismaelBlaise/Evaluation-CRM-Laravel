@@ -28,65 +28,72 @@ use Illuminate\Http\Request;
 Route::group(['namespace' => 'App\Api\v1\Controllers'], function () {
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('users', ['uses' => 'UserController@index']);
+        
     });
 });
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
-Route::prefix('clients')->group(function () {
-    Route::get('/', [ClientController::class, 'data']);
-    Route::get('/nb', [ClientController::class, 'nbdata']);
-})->middleware('auth:api');
+Route::post('/login', [AuthController::class, 'login']);  // No auth middleware for login route
 
-// Project Routes
-Route::prefix('projects')->group(function () {
-    Route::get('/', [ProjetController::class, 'data']);
-    Route::get('/nb', [ProjetController::class, 'nbdata']);
-    Route::get('/chart', [ProjetController::class, 'getProjectCountByStatus']);  
-})->middleware('auth:api');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');  // Add middleware for logout route
 
-// Task Routes
-Route::prefix('tasks')->group(function () {
-    Route::get('/', [TaskController::class, 'data']);
-    Route::get('/nb', [TaskController::class, 'nbdata']);
-})->middleware('auth:api');
+// All routes that require authentication are now inside a group
+Route::middleware('auth:api')->group(function () {
+    // Client Routes
+    Route::prefix('clients')->group(function () {
+        Route::get('/', [ClientController::class, 'data']);
+        Route::get('/nb', [ClientController::class, 'nbdata']);
+    });
 
-// Offer Routes
-Route::prefix('offers')->group(function () {
-    Route::get('/', [OfferController::class, 'data']);
-    Route::get('/nb', [OfferController::class, 'nbdata']);
-})->middleware('auth:api');
+    // Project Routes
+    Route::prefix('projects')->group(function () {
+        Route::get('/', [ProjetController::class, 'data']);
+        Route::get('/nb', [ProjetController::class, 'nbdata']);
+        Route::get('/chart', [ProjetController::class, 'getProjectCountByStatus']);  
+    });
 
-// Invoice Routes
-Route::prefix('invoices')->group(function () {
-    Route::get('/', [InvoiceController::class, 'data']);
-    Route::get('/nb', [InvoiceController::class, 'nbdata']);
-    Route::get('/chart/{annee?}/{mois?}', [InvoiceController::class, 'invoicePaymentSummary']);
-})->middleware('auth:api');
+    // Task Routes
+    Route::prefix('tasks')->group(function () {
+        Route::get('/', [TaskController::class, 'data']);
+        Route::get('/nb', [TaskController::class, 'nbdata']);
+    });
 
-// Payment Routes
-Route::prefix('payments')->group(function () {
-    Route::get('/', [PaymentController::class, 'data']);
-    Route::get('/nb', [PaymentController::class, 'nbdata']);
-    Route::get('/sum', [PaymentController::class, 'sumpayment']);
-    Route::get('/chart', [PaymentController::class,'monthlyRevenueChart']);
-    Route::post('/update/{id}', [PaymentController::class, 'updateAmount']);
-    Route::post('/update-2/{id}', [PaymentController::class, 'update']);
-    Route::get('/delete/{id}', [PaymentController::class, 'deletePayment']);
-})->middleware('auth:api');
+    // Offer Routes
+    Route::prefix('offers')->group(function () {
+        Route::get('/', [OfferController::class, 'data']);
+        Route::get('/nb', [OfferController::class, 'nbdata']);
+    });
 
-// Invoice Line Routes
-Route::prefix('invoice-lines')->group(function () {
-    Route::get('/', [InvoiceLineController::class, 'data']);
-    Route::get('/nb', [InvoiceLineController::class, 'nbdata']);
-})->middleware('auth:api');
+    // Invoice Routes
+    Route::prefix('invoices')->group(function () {
+        Route::get('/', [InvoiceController::class, 'data']);
+        Route::get('/nb', [InvoiceController::class, 'nbdata']);
+        Route::get('/chart/{annee?}/{mois?}', [InvoiceController::class, 'invoicePaymentSummary']);
+    });
 
-Route::prefix('status')->group(function () {
-    Route::get('/projects', [StatusController::class, 'dataProjects']);
-    Route::get('/tasks', [StatusController::class, 'dataTasks']);
-    
-})->middleware('auth:api');
+    // Payment Routes
+    Route::prefix('payments')->group(function () {
+        Route::get('/', [PaymentController::class, 'data']);
+        Route::get('/nb', [PaymentController::class, 'nbdata']);
+        Route::get('/sum', [PaymentController::class, 'sumpayment']);
+        Route::get('/chart', [PaymentController::class,'monthlyRevenueChart']);
+        Route::post('/update/{id}', [PaymentController::class, 'updateAmount']);
+        Route::post('/update-2/{id}', [PaymentController::class, 'update']);
+        Route::get('/delete/{id}', [PaymentController::class, 'deletePayment']);
+    });
 
-Route::post('/configuration', [ConfigurationController::class, 'insert'])->middleware('auth:api');
+    // Invoice Line Routes
+    Route::prefix('invoice-lines')->group(function () {
+        Route::get('/', [InvoiceLineController::class, 'data']);
+        Route::get('/nb', [InvoiceLineController::class, 'nbdata']);
+    });
 
+    // Status Routes
+    Route::prefix('status')->group(function () {
+        Route::get('/projects', [StatusController::class, 'dataProjects']);
+        Route::get('/tasks', [StatusController::class, 'dataTasks']);
+    });
+
+    // Configuration Route
+    Route::post('/configuration', [ConfigurationController::class, 'insert']);
+});
 
