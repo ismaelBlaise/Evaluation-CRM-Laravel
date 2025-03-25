@@ -15,7 +15,7 @@ class TasksDummyTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Task::class, 50)->create([
+        factory(Task::class, 1)->create([
             'client_id' => Client::all()->random()->id,
             'user_created_id' => User::all()->random()->id,
             'user_assigned_id' => User::all()->random()->id,
