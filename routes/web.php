@@ -40,7 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::prefix('import')->name('import.')->group(function () {
         Route::get('/', 'ImportController@index')->name('index');
-        Route::post('/upload', 'ImportController@uploadCsv')->name('upload');
+        Route::post('/upload', 'ImportController@import')->name('upload');
     });
 
     Route::prefix('generate')->name('generate.')->group(function () {
