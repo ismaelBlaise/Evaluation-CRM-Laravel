@@ -95,7 +95,7 @@ class ImportController extends Controller
         $this->repartitionSevice->repartitionTempProject();
         $this->repartitionSevice->repartitionTempProjectTask();
         $this->repartitionSevice->repartitionTempOffer();
-
+        
 
         return back()->with(array_merge([
             'success' => 'Importation réussie',

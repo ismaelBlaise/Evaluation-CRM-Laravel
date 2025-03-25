@@ -203,7 +203,7 @@ class RepartitionService
                         'external_id' => Uuid::uuid4()->toString(),
                         'description' => 'Fictive',
                         'number' => Uuid::uuid1()->toString(),
-                        'price' => $tempOffer->price,
+                        'price' => $tempOffer->prix,
                         'default_type' => 'pieces',
                         'archived' => false
                     ]);
@@ -223,41 +223,50 @@ class RepartitionService
                         'source_id' => $lead->id,
                         'source_type' => Lead::class
                     ]);
+
     
-                     
-                    if ($tempOffer->type == "invoices") {
-                        $invoiceData = $offer->toArray();
-                        $invoiceData['offer_id'] = $offer->id;
-                        $invoiceData['invoice_number'] = app(InvoiceNumberService::class)->setNextInvoiceNumber();
-                        $invoiceData['status'] = InvoiceStatus::draft()->getStatus();
-                        
-                        $invoice = Invoice::create($invoiceData);
-                        
-                         
-                        $offer->invoiceLines->each(function ($line) use ($invoice) {
-                            $newLine = $line->replicate();
-                            $newLine->offer_id = null;
-                            $newLine->invoice_id = $invoice->id;
-                            $newLine->save();
-                        });
-                    }
+                    
                 }
 
-                $invoiceLine = InvoiceLine::create([
-                    'title' => $product->name,
-                    'type' => $product->default_type,
-                    'quantity' => $tempOffer->quantite,
-                    'comment' => '',
-                    'price' => $tempOffer->prix * 100,
-                    'product_id' => $product->id,
-                    'offer_id' => $offer->id
-                ]);
+                $invoiceLine= InvoiceLine::where('product_id', $product->id)->where('offer_id',$offer->id)->first();
+                if(!$invoiceLine){
+                    $invoiceLine = InvoiceLine::create([
+                        'title' => $product->name,
+                        'type' => $product->default_type,
+                        'quantity' => $tempOffer->quantite,
+                        'external_id'=>Uuid::uuid4()->toString(),
+                        'comment' => '',
+                        'price' => $tempOffer->prix,
+                        'product_id' => $product->id,
+                        'offer_id' => $offer->id
+                    ]);
+                }
+
+                
+                if ($tempOffer->type == "invoice") {
+                    $offer->setAsWon();
+    
+                    $invoice = Invoice::create($offer->toArray());
+                    $invoice->offer_id = $offer->id;
+                    $invoice->invoice_number = app(InvoiceNumberService::class)->setNextInvoiceNumber();
+                    $invoice->status = InvoiceStatus::draft()->getStatus();
+                    $invoice->save();
+                    
+                    $lines = $offer->invoiceLines;
+                    $newLines = collect();
+                    foreach($lines as $invoiceLine) {
+                        $invoiceLine->offer_id = null;
+                        $newLines->push(InvoiceLine::make($invoiceLine->toArray()));
+                    }
+            
+                    $invoice->invoiceLines()->saveMany($newLines);
+                }
     
                  
                 $tempOffer->delete();
     
             } catch (\Exception $e) {
-                continue;
+                throw $e;
             }
         }
     }
