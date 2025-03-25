@@ -16,6 +16,8 @@
                             <input type="file" class="form-control @error('file') is-invalid @enderror" id="file" name="file" required>
                             <label for="file2" class="h5 mt-3"><i class="fas fa-file-csv"></i> Fichier CSV 2</label>
                             <input type="file" class="form-control @error('file2') is-invalid @enderror" id="file2" name="file2" required>
+                            <label for="file3" class="h5 mt-3"><i class="fas fa-file-csv"></i> Fichier CSV 3</label>
+                            <input type="file" class="form-control @error('file3') is-invalid @enderror" id="file3" name="file3" required>
                             @error('file')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -99,7 +101,7 @@
                     @if(session('success'))
                         <div class="alert alert-success mt-4 text-center">
                             <h5 class="font-weight-bold">Fichier importé : <strong>{{  session('file_name2') }}</strong></h5>
-                            {{ session('success') ?? session('error') }}
+                            {{ session('success')}}
                             @if(session('imported_project_tasks_rows'))
                                 <br><span class="badge badge-success">Lignes de projets importées : {{ session('imported_project_tasks_rows') }}</span>
                             @endif
@@ -133,6 +135,59 @@
                             </div>
                         </div>
                     @endif
+                    @if(session('success'))
+                        <div class="alert alert-success mt-4 text-center">
+                            <h5 class="font-weight-bold">Fichier importé : <strong>{{  session('file_name3') }}</strong></h5>
+                            {{ session('success') }}
+                            @if(session('imported_offers_rows'))
+                                <br><span class="badge badge-success">Lignes de projets importées : {{ session('imported_offers_rows') }}</span>
+                            @endif
+                            
+                        </div>
+                    @endif
+
+                    @if(session('offers'))
+                        <div class="mt-4">
+                            <h4 class="text-success text-center">
+                                <i class="fas fa-check-circle"></i> Données importées
+                            </h4>
+                            
+                            <div class="table-responsive">
+                                <table id="tableOffers" class="table table-bordered table-striped">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Ligne originale</th>
+                                            <th>Nom du client</th>
+                                            <th>Titre du lead</th>
+                                            <th>Type</th>
+                                            <th>Produit</th>
+                                            <th>Prix</th>
+                                            <th>Quantité</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach(session('offers') as $offer)
+                                            <tr>
+                                                <td>{{ $offer->import_row }}</td>
+                                                <td>{{ $offer->client_name }}</td>
+                                                <td>{{ $offer->lead_title }}</td>
+                                                <td>{{ $offer->type }}</td>
+                                                <td>{{ $offer->produit }}</td>
+                                                <td>{{ $offer->prix }}</td>
+                                                <td>{{ $offer->quantite }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div id="paginationOffers" class="pagination"></div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-warning text-center mt-4">
+                            Aucune donnée importée.
+                        </div>
+                    @endif
+
                 </div>
             </div>
         </div>

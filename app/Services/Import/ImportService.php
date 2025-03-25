@@ -2,8 +2,10 @@
 
 namespace App\Services\Import;
 
+use App\Imports\OffersImport;
 use App\Imports\ProjectsImport;
 use App\Imports\ProjectTasksImport;
+use App\Models\TempOffer;
 use App\Models\TempProject;
 use App\Models\TempProjectTask;
 use Illuminate\Support\Facades\Log;
@@ -23,6 +25,7 @@ class ImportService
             $errors = $this->handleImportErrors($importProject);
             if (!empty($errors)) {
                 TempProjectTask::truncate();
+                TempOffer::truncate();
                 TempProject::truncate();
                 return ['error' => true, 'message' => 'Importation annulée - Des erreurs ont été détectées', 'errors' => $errors];
             }
@@ -46,10 +49,35 @@ class ImportService
             if (!empty($errors)) {
                 TempProjectTask::truncate();
                 TempProject::truncate();
+                TempOffer::truncate();
                 return ['error' => true, 'message' => 'Importation annulée - Des erreurs ont été détectées', 'errors' => $errors];
             }
 
             return ['error' => false, 'data' => TempProjectTask::all(), 'imported_rows' => TempProjectTask::count()];
+        } catch (Exception $e) {
+            Log::error('Erreur lors de l\'importation des tâches: ' . $e->getMessage());
+            return ['error' => true, 'message' => 'Erreur fatale lors de l\'import: ' . $e->getMessage()];
+        }
+    }
+
+
+    public function importOffers($file)
+    {
+        TempOffer::truncate();
+        $importOffer = new OffersImport;
+
+        try {
+            Excel::import($importOffer, $file);
+
+            $errors = $this->handleImportErrors($importOffer);
+            if (!empty($errors)) {
+                TempProjectTask::truncate();
+                TempProject::truncate();
+                TempOffer::truncate();
+                return ['error' => true, 'message' => 'Importation annulée - Des erreurs ont été détectées', 'errors' => $errors];
+            }
+
+            return ['error' => false, 'data' => TempOffer::all(), 'imported_rows' => TempOffer::count()];
         } catch (Exception $e) {
             Log::error('Erreur lors de l\'importation des tâches: ' . $e->getMessage());
             return ['error' => true, 'message' => 'Erreur fatale lors de l\'import: ' . $e->getMessage()];

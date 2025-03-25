@@ -23,11 +23,14 @@ class ImportController extends Controller
     {
         $request->validate([
             'file' => 'required|file|mimes:csv,txt',
-            'file2' => 'required|file|mimes:csv,txt'
+            'file2' => 'required|file|mimes:csv,txt',
+            'file3' => 'required|file|mimes:csv,txt'
+
         ]);
 
         $fileName = "CSV 1 :".$request->file('file')->getClientOriginalName();
         $fileName2 = "CSV 2 :".$request->file('file2')->getClientOriginalName();
+        $fileName3 = "CSV 3:".$request->file('file3')->getClientOriginalName();
 
         $projectImportResult = $this->importService->importProjects($request->file('file'));
         if ($projectImportResult['error']) {
@@ -49,14 +52,28 @@ class ImportController extends Controller
             ]);
         }
 
+
+        $offerImportResult = $this->importService->importOffers($request->file('file3'));
+        if ($offerImportResult['error']) {
+            return back()->with([
+                'error' => $offerImportResult['message'],
+                'import_errors' => $offerImportResult['errors'],
+                'file_name' => $fileName3,
+                'skipped_rows' => count($offerImportResult['errors'])
+            ]);
+        }
+
         return back()->with([
             'success' => 'Importation réussie',
             'projects' => $projectImportResult['data'],
             'project_tasks' => $taskImportResult['data'],
+            'offers' => $offerImportResult['data'],
             'file_name' => $fileName,
             'file_name2' => $fileName2,
+            'file_name3' => $fileName3,
             'imported_projects_rows' => $projectImportResult['imported_rows'],
-            'imported_project_tasks_rows' => $taskImportResult['imported_rows']
+            'imported_project_tasks_rows' => $taskImportResult['imported_rows'],
+            'imported_offers_rows' => $offerImportResult['imported_rows']
         ]);
     }
 }
