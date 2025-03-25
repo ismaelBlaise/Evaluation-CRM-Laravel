@@ -7,6 +7,7 @@ use App\Models\TempProject;
 use App\Events\ClientAction;
 use App\Http\Controllers\ClientsController;
 use App\Models\Contact;
+use App\Models\Lead;
 use App\Models\Task;
 use App\Models\TempOffer;
 use App\Models\TempProjectTask;
@@ -99,8 +100,8 @@ class RepartitionService
                     'title' => $tempProjectTask->project_title,
                     'description' => 'Description factice', 
                     'client_id' => 1, 
-                    'user_created_id' => 1, 
-                    'user_assigned_id' => 1,
+                    'user_created_id' =>auth()->id(), 
+                    'user_assigned_id' => auth()->id(),
                     'status_id' => 1, 
                     'deadline' => now()->addDays(30), 
                 ]);
@@ -118,8 +119,8 @@ class RepartitionService
                     'title' => $tempProjectTask->task_title,
                     'description' => 'Description factice', 
                     'status_id' => 1, 
-                    'user_created_id' => $projectExist->user_created_id, 
-                    'user_assigned_id' =>$projectExist->user_assigned_id, 
+                    'user_created_id' =>auth()->id(), 
+                    'user_assigned_id' =>auth()->id(), 
                     'client_id' => $projectExist->client_id, 
                     'project_id' => $projectExist ? $projectExist->id : $project->id, 
                     'deadline' => now()->addDays(15),  
@@ -135,22 +136,22 @@ class RepartitionService
     public function repartitionTempOffer()
     {
         
-        $tempProjects = TempOffer::all();
+        $tempOffers = TempOffer::all();
 
-        foreach ($tempProjects as $tempProject) {
-            $client = Client::where('company_name', $tempProject->client_name)->first();
+        foreach ($tempOffers as $tempOffer) {
+            $client = Client::where('company_name', $tempOffer->client_name)->first();
 
             if (!$client) {
                 $client = Client::create([
                     'external_id' => Uuid::uuid4()->toString(),
                     'vat' => 'N/A', 
-                    'company_name' => $tempProject->client_name,
+                    'company_name' => $tempOffer->client_name,
                     'address' => 'N/A', 
                     'zipcode' => 'N/A', 
                     'city' => 'N/A', 
                     'company_type' => 'N/A', 
                     'industry_id' => 1, 
-                    'user_id' => 1,
+                    'user_id' => auth()->id(),
                     'client_number' => app(ClientNumberService::class)->setNextClientNumber(),
                 ]);
                 
@@ -158,7 +159,7 @@ class RepartitionService
                 $contact = Contact::create([
                     'external_id' => Uuid::uuid4()->toString(),
                     'name' => 'Contact principal', 
-                    'email' =>$this->generateFakeEmail($tempProject->client_name),
+                    'email' =>$this->generateFakeEmail($tempOffer->client_name),
                     'primary_number' => null,
                     'secondary_number' => null, 
                     'client_id' => $client->id,
@@ -166,27 +167,30 @@ class RepartitionService
                 ]);
             }
 
-            $projectExist = Project::where('title', $tempProject->project_title)->first();
+            $leadexist = Lead::where('title', $tempOffer->lead_title)->first();
 
              
-            if( !$projectExist ) {
-                $project = Project::create([
-                    'external_id' => Uuid::uuid4()->toString(),
-                    'title' => $tempProject->project_title,
-                    'description' => 'Description factice', 
-                    'client_id' => $client->id,
-                    'user_created_id' => 1, 
-                    'user_assigned_id' => 1, 
-                    'status_id' => 1, 
-                    'deadline' => now()->addDays(30), 
-                ]);
+            if( !$leadexist ) {
+                $lead =Lead::create(
+                    [
+                        'title' => $tempOffer->lead_title,
+                        'description' => 'Description fictive',
+                        'user_assigned_id' => $client->user_id,
+                        'deadline' => now()->addDays(15),
+                        'status_id' =>1,
+                        'user_created_id' => auth()->id(),
+                        'external_id' => Uuid::uuid4()->toString(),
+                        'client_id' => $client->id
+                    ]);
             }
+
+
 
              
             event(new ClientAction($client, ClientsController::CREATED));
 
             
-            $tempProject->delete();
+            $tempOffer->delete();
         }
     }
 }
