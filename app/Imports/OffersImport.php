@@ -45,12 +45,16 @@ class OffersImport implements
             throw new \Exception("Le produit est requis à la ligne {$this->rowNumber}");
         }
 
-        if (!isset($row['prix']) || !is_numeric($row['prix'])) {
+        // Convertir le prix avec virgule en point décimal
+        $prix = $this->convertToNumeric($row['prix']);
+        if ($prix === false) {
             throw new \Exception("Le prix doit être un nombre valide à la ligne {$this->rowNumber}");
         }
 
-        if (!isset($row['quantite']) || !is_numeric($row['quantite'])) {
-            throw new \Exception("La quantité doit être un nombre valide à la ligne {$this->rowNumber}");
+        // Convertir la quantité en entier
+        $quantite = $this->convertToInteger($row['quantite']);
+        if ($quantite === false) {
+            throw new \Exception("La quantité doit être un nombre entier valide à la ligne {$this->rowNumber}");
         }
 
         return new TempOffer([
@@ -58,8 +62,8 @@ class OffersImport implements
             'lead_title'  => $row['lead_title'],
             'type'        => $row['type'],
             'produit'     => $row['produit'],
-            'prix'        => $row['prix'],
-            'quantite'    => $row['quantite'],
+            'prix'        => $prix,
+            'quantite'    => $quantite,
             'import_row'   => $this->rowNumber
         ]);
     }
@@ -71,9 +75,53 @@ class OffersImport implements
             'lead_title'  => 'required|string|max:255',
             'type'        => 'required|string|max:50',
             'produit'     => 'required|string|max:100',
-            'prix'        => 'required|numeric|min:0',
-            'quantite'    => 'required|integer|min:1',
+            'prix'        => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($this->convertToNumeric($value) === false) {
+                        $fail("Le champ $attribute doit être un nombre valide.");
+                    }
+                }
+            ],
+            'quantite'    => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($this->convertToInteger($value) === false) {
+                        $fail("Le champ $attribute doit être un nombre entier valide.");
+                    }
+                }
+            ],
         ];
+    }
+
+    /**
+     * Convertit une chaîne avec virgule en nombre décimal
+     */
+    private function convertToNumeric($value)
+    {
+        // Si c'est déjà un nombre, on le retourne directement
+        if (is_numeric($value)) {
+            return $value;
+        }
+
+        // Remplace les virgules par des points et vérifie si c'est numérique
+        $value = str_replace(',', '.', str_replace(' ', '', $value));
+        return is_numeric($value) ? (float) $value : false;
+    }
+
+    /**
+     * Convertit une chaîne en entier
+     */
+    private function convertToInteger($value)
+    {
+        // Si c'est déjà un entier, on le retourne directement
+        if (is_int($value)) {
+            return $value;
+        }
+
+        // Supprime les espaces et vérifie si c'est un entier valide
+        $value = str_replace(' ', '', $value);
+        return ctype_digit($value) ? (int) $value : false;
     }
 
     public function onError(Throwable $e)

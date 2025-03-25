@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Services\Import\ImportService;
+use App\Services\Import\RepartitionService;
 use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
     private $importService;
+    private $repartitionSevice;
 
-    public function __construct(ImportService $importService)
+    public function __construct(ImportService $importService,RepartitionService $repartitionSevice)
     {
         $this->importService = $importService;
+        $this->repartitionSevice = $repartitionSevice;
     }
 
     public function index()
@@ -25,55 +28,85 @@ class ImportController extends Controller
             'file' => 'required|file|mimes:csv,txt',
             'file2' => 'required|file|mimes:csv,txt',
             'file3' => 'required|file|mimes:csv,txt'
-
         ]);
 
-        $fileName = "CSV 1 :".$request->file('file')->getClientOriginalName();
-        $fileName2 = "CSV 2 :".$request->file('file2')->getClientOriginalName();
-        $fileName3 = "CSV 3:".$request->file('file3')->getClientOriginalName();
+        $fileNames = [
+            'file' => "CSV 1 : ".$request->file('file')->getClientOriginalName(),
+            'file2' => "CSV 2 : ".$request->file('file2')->getClientOriginalName(),
+            'file3' => "CSV 3 : ".$request->file('file3')->getClientOriginalName()
+        ];
 
+        // Démarrer une transaction pour toutes les opérations
+        $this->importService->clearAllTempData();
+        $allErrors = [];
+        $hasErrors = false;
+        $results = [];
+
+        // Importer les projets
         $projectImportResult = $this->importService->importProjects($request->file('file'));
         if ($projectImportResult['error']) {
+            $hasErrors = true;
+            $this->addFileSourceToErrors($projectImportResult['errors'], $fileNames['file']);
+            $allErrors = array_merge($allErrors, $projectImportResult['errors']);
+        } else {
+            $results['projects'] = $projectImportResult['data'];
+            $results['imported_projects_rows'] = $projectImportResult['imported_rows'];
+        }
+
+        // Importer les tâches seulement si pas d'erreur précédente
+        if (!$hasErrors) {
+            $taskImportResult = $this->importService->importProjectTasks($request->file('file2'));
+            if ($taskImportResult['error']) {
+                $hasErrors = true;
+                $this->addFileSourceToErrors($taskImportResult['errors'], $fileNames['file2']);
+                $allErrors = array_merge($allErrors, $taskImportResult['errors']);
+            } else {
+                $results['project_tasks'] = $taskImportResult['data'];
+                $results['imported_project_tasks_rows'] = $taskImportResult['imported_rows'];
+            }
+        }
+
+        // Importer les offres seulement si pas d'erreur précédente
+        if (!$hasErrors) {
+            $offerImportResult = $this->importService->importOffers($request->file('file3'));
+            if ($offerImportResult['error']) {
+                $hasErrors = true;
+                $this->addFileSourceToErrors($offerImportResult['errors'], $fileNames['file3']);
+                $allErrors = array_merge($allErrors, $offerImportResult['errors']);
+            } else {
+                $results['offers'] = $offerImportResult['data'];
+                $results['imported_offers_rows'] = $offerImportResult['imported_rows'];
+            }
+        }
+
+        // Si erreurs, tout supprimer
+        if ($hasErrors) {
+            $this->importService->clearAllTempData();
             return back()->with([
-                'error' => $projectImportResult['message'],
-                'import_errors' => $projectImportResult['errors'],
-                'file_name' => $fileName,
-                'skipped_rows' => count($projectImportResult['errors'])
+                'error' => 'Des erreurs sont survenues lors de l\'importation',
+                'import_errors' => $allErrors,
+                'file_name' => $fileNames['file'],
+                'file_name2' => $fileNames['file2'],
+                'file_name3' => $fileNames['file3'],
+                'skipped_rows' => count($allErrors)
             ]);
         }
 
-        $taskImportResult = $this->importService->importProjectTasks($request->file('file2'));
-        if ($taskImportResult['error']) {
-            return back()->with([
-                'error' => $taskImportResult['message'],
-                'import_errors' => $taskImportResult['errors'],
-                'file_name' => $fileName2,
-                'skipped_rows' => count($taskImportResult['errors'])
-            ]);
-        }
+        $this->repartitionSevice->repartitionTempProject();
+        $this->repartitionSevice->repartitionTempProjectTask();
 
-
-        $offerImportResult = $this->importService->importOffers($request->file('file3'));
-        if ($offerImportResult['error']) {
-            return back()->with([
-                'error' => $offerImportResult['message'],
-                'import_errors' => $offerImportResult['errors'],
-                'file_name' => $fileName3,
-                'skipped_rows' => count($offerImportResult['errors'])
-            ]);
-        }
-
-        return back()->with([
+        return back()->with(array_merge([
             'success' => 'Importation réussie',
-            'projects' => $projectImportResult['data'],
-            'project_tasks' => $taskImportResult['data'],
-            'offers' => $offerImportResult['data'],
-            'file_name' => $fileName,
-            'file_name2' => $fileName2,
-            'file_name3' => $fileName3,
-            'imported_projects_rows' => $projectImportResult['imported_rows'],
-            'imported_project_tasks_rows' => $taskImportResult['imported_rows'],
-            'imported_offers_rows' => $offerImportResult['imported_rows']
-        ]);
+            'file_name' => $fileNames['file'],
+            'file_name2' => $fileNames['file2'],
+            'file_name3' => $fileNames['file3']
+        ], $results));
+    }
+
+    private function addFileSourceToErrors(&$errors, $fileName)
+    {
+        foreach ($errors as &$error) {
+            $error['source_file'] = $fileName;
+        }
     }
 }

@@ -16,18 +16,14 @@ class ImportService
 {
     public function importProjects($file)
     {
-        TempProject::truncate();
         $importProject = new ProjectsImport;
 
         try {
-            Excel::import($importProject, $file);
+            $result = Excel::import($importProject, $file);
             
             $errors = $this->handleImportErrors($importProject);
             if (!empty($errors)) {
-                TempProjectTask::truncate();
-                TempOffer::truncate();
-                TempProject::truncate();
-                return ['error' => true, 'message' => 'Importation annulée - Des erreurs ont été détectées', 'errors' => $errors];
+                return ['error' => true, 'message' => 'Erreurs détectées dans le fichier projets', 'errors' => $errors];
             }
 
             return ['error' => false, 'data' => TempProject::all(), 'imported_rows' => TempProject::count()];
@@ -39,18 +35,14 @@ class ImportService
 
     public function importProjectTasks($file)
     {
-        TempProjectTask::truncate();
         $importProjectTask = new ProjectTasksImport;
 
         try {
-            Excel::import($importProjectTask, $file);
+            $result = Excel::import($importProjectTask, $file);
 
             $errors = $this->handleImportErrors($importProjectTask);
             if (!empty($errors)) {
-                TempProjectTask::truncate();
-                TempProject::truncate();
-                TempOffer::truncate();
-                return ['error' => true, 'message' => 'Importation annulée - Des erreurs ont été détectées', 'errors' => $errors];
+                return ['error' => true, 'message' => 'Erreurs détectées dans le fichier tâches', 'errors' => $errors];
             }
 
             return ['error' => false, 'data' => TempProjectTask::all(), 'imported_rows' => TempProjectTask::count()];
@@ -60,26 +52,21 @@ class ImportService
         }
     }
 
-
     public function importOffers($file)
     {
-        TempOffer::truncate();
         $importOffer = new OffersImport;
 
         try {
-            Excel::import($importOffer, $file);
+            $result = Excel::import($importOffer, $file);
 
             $errors = $this->handleImportErrors($importOffer);
             if (!empty($errors)) {
-                TempProjectTask::truncate();
-                TempProject::truncate();
-                TempOffer::truncate();
-                return ['error' => true, 'message' => 'Importation annulée - Des erreurs ont été détectées', 'errors' => $errors];
+                return ['error' => true, 'message' => 'Erreurs détectées dans le fichier offres', 'errors' => $errors];
             }
 
             return ['error' => false, 'data' => TempOffer::all(), 'imported_rows' => TempOffer::count()];
         } catch (Exception $e) {
-            Log::error('Erreur lors de l\'importation des tâches: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'importation des offres: ' . $e->getMessage());
             return ['error' => true, 'message' => 'Erreur fatale lors de l\'import: ' . $e->getMessage()];
         }
     }
@@ -98,5 +85,12 @@ class ImportService
             }
         }
         return $errors;
+    }
+
+    public function clearAllTempData()
+    {
+        TempProjectTask::truncate();
+        TempProject::truncate();
+        TempOffer::truncate();
     }
 }
