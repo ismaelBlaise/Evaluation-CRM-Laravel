@@ -213,12 +213,12 @@ class RepartitionService
                 }   
     
                 
-                $offer = Offer::where('source_type', "App\Models\Lead")
-                            ->where('source_id', $lead->id)
-                            ->where('client_id', $client->id)
-                            ->first();
+                // $offer = Offer::where('source_type', "App\Models\Lead")
+                //             ->where('source_id', $lead->id)
+                //             ->where('client_id', $client->id)
+                //             ->first();
     
-                if (!$offer) {
+                // if (!$offer) {
                     $offer = Offer::create([
                         'status' => OfferStatus::inProgress()->getStatus(),
                         'client_id' => $client->id,
@@ -229,7 +229,7 @@ class RepartitionService
 
     
                     
-                }
+                // }
 
                 $invoiceLine = InvoiceLine::where('product_id', $product->id)
                 ->where('offer_id', $offer->id)
