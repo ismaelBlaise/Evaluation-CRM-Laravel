@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Import;
 
+use App\Enums\OfferStatus;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\TempProject;
@@ -8,6 +9,8 @@ use App\Events\ClientAction;
 use App\Http\Controllers\ClientsController;
 use App\Models\Contact;
 use App\Models\Lead;
+use App\Models\Offer;
+use App\Models\Product;
 use App\Models\Task;
 use App\Models\TempOffer;
 use App\Models\TempProjectTask;
@@ -184,6 +187,46 @@ class RepartitionService
                     ]);
             }
 
+            $product=Product::where('name',$tempOffer->produit)->first();
+            if( !$product ) {
+                $product = Product::create(
+                    [
+                        'name' => $tempOffer->produit,
+                        'external_id' => Uuid::uuid4()->toString(),
+                        'description' => 'Fictive ',
+                        'number' => Uuid::uuid1()->toString(),
+                        'price' => $tempOffer->price,
+                        'default_type' => 'pieces',
+                        'archived' => false
+                    ]
+                    );
+            }
+
+
+            $offer = Offer::create([
+                'status' => OfferStatus::inProgress()->getStatus(),
+                'client_id' => $lead->client_id,
+                'external_id' =>  Uuid::uuid4()->toString(),
+                'source_id' => $lead->id,
+                'source_type' => Lead::class,
+                'status' => OfferStatus::inProgress()->getStatus()
+            ]);
+            
+            
+                if(!$line["title"] || !$line["type"] || !$line["price"] || !$line["quantity"]) {
+                    return response("missing fields", 422);
+                }
+    
+                $invoiceLine = InvoiceLine::make([
+                    'title' => $line["title"],
+                    'type' => $line["type"],
+                    'quantity' => $line["quantity"] ?: 1,
+                    'comment' => $line["comment"],
+                    'price' => $line["price"] * 100,
+                    'product_id' => $line["product"] ? Product::whereExternalId($line["product"])->first()->id : null
+                ]);
+                $offer->invoiceLines()->save($invoiceLine);
+            }
 
 
              
