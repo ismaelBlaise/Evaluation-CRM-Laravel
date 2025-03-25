@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Import;
 
+use App\Enums\InvoiceStatus;
 use App\Enums\OfferStatus;
 use App\Models\Client;
 use App\Models\Project;
@@ -8,6 +9,8 @@ use App\Models\TempProject;
 use App\Events\ClientAction;
 use App\Http\Controllers\ClientsController;
 use App\Models\Contact;
+use App\Models\Invoice;
+use App\Models\InvoiceLine;
 use App\Models\Lead;
 use App\Models\Offer;
 use App\Models\Product;
@@ -15,6 +18,7 @@ use App\Models\Task;
 use App\Models\TempOffer;
 use App\Models\TempProjectTask;
 use App\Services\ClientNumber\ClientNumberService;
+use App\Services\InvoiceNumber\InvoiceNumberService;
 use Ramsey\Uuid\Guid\Guid;
 use Ramsey\Uuid\Uuid;
 
@@ -138,103 +142,125 @@ class RepartitionService
 
     public function repartitionTempOffer()
     {
-        
         $tempOffers = TempOffer::all();
-
+    
         foreach ($tempOffers as $tempOffer) {
-            $client = Client::where('company_name', $tempOffer->client_name)->first();
-
-            if (!$client) {
-                $client = Client::create([
-                    'external_id' => Uuid::uuid4()->toString(),
-                    'vat' => 'N/A', 
-                    'company_name' => $tempOffer->client_name,
-                    'address' => 'N/A', 
-                    'zipcode' => 'N/A', 
-                    'city' => 'N/A', 
-                    'company_type' => 'N/A', 
-                    'industry_id' => 1, 
-                    'user_id' => auth()->id(),
-                    'client_number' => app(ClientNumberService::class)->setNextClientNumber(),
-                ]);
+            try {
+            
+                $client = Client::where('company_name', $tempOffer->client_name)->first();
+    
+                if (!$client) {
+                    $client = Client::create([
+                        'external_id' => Uuid::uuid4()->toString(),
+                        'vat' => 'N/A', 
+                        'company_name' => $tempOffer->client_name,
+                        'address' => 'N/A', 
+                        'zipcode' => 'N/A', 
+                        'city' => 'N/A', 
+                        'company_type' => 'N/A', 
+                        'industry_id' => 1, 
+                        'user_id' => auth()->id(),
+                        'client_number' => app(ClientNumberService::class)->setNextClientNumber(),
+                    ]);
+                    
+                    $contact = Contact::create([
+                        'external_id' => Uuid::uuid4()->toString(),
+                        'name' => 'Contact principal', 
+                        'email' => $this->generateFakeEmail($tempOffer->client_name),
+                        'primary_number' => null,
+                        'secondary_number' => null, 
+                        'client_id' => $client->id,
+                        'is_primary' => true
+                    ]);
+    
+                    event(new ClientAction($client, ClientsController::CREATED));
+                }
+    
                 
-                 
-                $contact = Contact::create([
-                    'external_id' => Uuid::uuid4()->toString(),
-                    'name' => 'Contact principal', 
-                    'email' =>$this->generateFakeEmail($tempOffer->client_name),
-                    'primary_number' => null,
-                    'secondary_number' => null, 
-                    'client_id' => $client->id,
-                    'is_primary' => true
-                ]);
-            }
-
-            $leadexist = Lead::where('title', $tempOffer->lead_title)->first();
-
-             
-            if( !$leadexist ) {
-                $lead =Lead::create(
-                    [
+                $lead = Lead::where('title', $tempOffer->lead_title)
+                          ->where('client_id', $client->id)
+                          ->first();
+    
+                if (!$lead) {
+                    $lead = Lead::create([
                         'title' => $tempOffer->lead_title,
                         'description' => 'Description fictive',
                         'user_assigned_id' => $client->user_id,
                         'deadline' => now()->addDays(15),
-                        'status_id' =>1,
+                        'status_id' => 1,
                         'user_created_id' => auth()->id(),
                         'external_id' => Uuid::uuid4()->toString(),
                         'client_id' => $client->id
                     ]);
-            }
-
-            $product=Product::where('name',$tempOffer->produit)->first();
-            if( !$product ) {
-                $product = Product::create(
-                    [
+                }
+    
+                
+                $product = Product::where('name', $tempOffer->produit)->first();
+                
+                if (!$product) {
+                    $product = Product::create([
                         'name' => $tempOffer->produit,
                         'external_id' => Uuid::uuid4()->toString(),
-                        'description' => 'Fictive ',
+                        'description' => 'Fictive',
                         'number' => Uuid::uuid1()->toString(),
                         'price' => $tempOffer->price,
                         'default_type' => 'pieces',
                         'archived' => false
-                    ]
-                    );
-            }
-
-            $offerExisting=Offer::where('source_type','App\Models\Lead')
-
-            $offer = Offer::create([
-                'status' => OfferStatus::inProgress()->getStatus(),
-                'client_id' => $lead->client_id,
-                'external_id' =>  Uuid::uuid4()->toString(),
-                'source_id' => $lead->id,
-                'source_type' => Lead::class,
-                'status' => OfferStatus::inProgress()->getStatus()
-            ]);
-            
-            
-                if(!$line["title"] || !$line["type"] || !$line["price"] || !$line["quantity"]) {
-                    return response("missing fields", 422);
+                    ]);
                 }
     
-                $invoiceLine = InvoiceLine::make([
-                    'title' => $line["title"],
-                    'type' => $line["type"],
-                    'quantity' => $line["quantity"] ?: 1,
-                    'comment' => $line["comment"],
-                    'price' => $line["price"] * 100,
-                    'product_id' => $line["product"] ? Product::whereExternalId($line["product"])->first()->id : null
-                ]);
-                $offer->invoiceLines()->save($invoiceLine);
+                
+                $offer = Offer::where('source_type', Lead::class)
+                            ->where('source_id', $lead->id)
+                            ->where('client_id', $client->id)
+                            ->first();
+    
+                if (!$offer) {
+                    $offer = Offer::create([
+                        'status' => OfferStatus::inProgress()->getStatus(),
+                        'client_id' => $client->id,
+                        'external_id' => Uuid::uuid4()->toString(),
+                        'source_id' => $lead->id,
+                        'source_type' => Lead::class
+                    ]);
+    
+                     
+                    $invoiceLine = InvoiceLine::create([
+                        'title' => $product->name,
+                        'type' => $product->default_type,
+                        'quantity' => $tempOffer->quantite,
+                        'comment' => '',
+                        'price' => $tempOffer->prix * 100,
+                        'product_id' => $product->id,
+                        'offer_id' => $offer->id
+                    ]);
+    
+                     
+                    if ($tempOffer->type == "invoices") {
+                        $invoiceData = $offer->toArray();
+                        $invoiceData['offer_id'] = $offer->id;
+                        $invoiceData['invoice_number'] = app(InvoiceNumberService::class)->setNextInvoiceNumber();
+                        $invoiceData['status'] = InvoiceStatus::draft()->getStatus();
+                        
+                        $invoice = Invoice::create($invoiceData);
+                        
+                         
+                        $offer->invoiceLines->each(function ($line) use ($invoice) {
+                            $newLine = $line->replicate();
+                            $newLine->offer_id = null;
+                            $newLine->invoice_id = $invoice->id;
+                            $newLine->save();
+                        });
+                    }
+                }
+    
+                 
+                $tempOffer->delete();
+    
+            } catch (\Exception $e) {
+                continue;
             }
-
-
-             
-            event(new ClientAction($client, ClientsController::CREATED));
-
-            
-            $tempOffer->delete();
         }
     }
+
 }
