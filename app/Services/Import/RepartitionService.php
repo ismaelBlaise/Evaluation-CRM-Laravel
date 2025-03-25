@@ -202,6 +202,7 @@ class RepartitionService
                     );
             }
 
+            $offerExisting=Offer::where('source_type','App\Models\Lead')
 
             $offer = Offer::create([
                 'status' => OfferStatus::inProgress()->getStatus(),
