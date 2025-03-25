@@ -208,6 +208,9 @@ class RepartitionService
                         'archived' => false
                     ]);
                 }
+                else if($product->price!= $tempOffer->prix) {
+                    
+                }   
     
                 
                 $offer = Offer::where('source_type', "App\Models\Lead")
