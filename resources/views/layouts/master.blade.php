@@ -18,6 +18,10 @@
     <link rel="stylesheet" href="{{ asset(elixir('css/bootstrap-select.min.css')) }}">
     <link href="{{ URL::asset('css/summernote.css') }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{{ asset('images/favicon.png') }}}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap4.min.css">
+
+
     <script>
         var DayByDay =  {
             csrfToken: "{{csrf_token()}}",
@@ -242,7 +246,13 @@
 <script type="text/javascript" src="{{ URL::asset('js/jquery-ui-sortable.min.js') }}"></script>
 <script type="text/javascript" src="{{ URL::asset('js/bootstrap-tour-standalone.min.js') }}"></script>
 <script type="text/javascript" src="{{ URL::asset('js/picker.js') }}"></script>
-
+<!-- Dans la section head -->
+<!-- À la fin de votre body ou dans une section scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap4.min.js"></script>
 @if(App::getLocale() == "dk")
 <script>
     $(document).ready(function () {
