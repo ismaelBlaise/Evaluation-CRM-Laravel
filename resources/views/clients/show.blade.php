@@ -9,9 +9,11 @@
             <div class="tablet">
                 <div class="tablet__head">
                     <div class="tablet__head-label">
-                        <h3 class="tablet__head-title">@lang('Overview')</h3>
+                        <h3 class="tablet__head-title">@lang('Overview')</h3><a href="/export/client?id={{ $client->id }}" class="btn btn-md btn-brand float-right">@lang('Exporter')</a></th>
+                
                     </div>
                 </div>
+
                 <div class="tablet__body">
                     <el-tabs active-name="tasks" style="width:100%">
                         <el-tab-pane label="{{ __('Projects') }}" name="projects">

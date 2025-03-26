@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\TempProject;
 use App\Events\ClientAction;
 use App\Http\Controllers\ClientsController;
+use App\Models\Configuration;
 use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
@@ -261,6 +262,10 @@ class RepartitionService
                         $invoice->invoice_number = app(InvoiceNumberService::class)->setNextInvoiceNumber();
                         $invoice->status = InvoiceStatus::draft()->getStatus();
                     }
+                    // if($invoice->remise==null){
+                    //     $discountPercentage=Configuration::getRemiseGlobale();
+                    //     $invoice->remise=$discountPercentage;
+                    // }   
                     // $invoice->created_at= now()->addSecond(20);
                     // $invoice->updated_at= now()->addSecond(20);
 

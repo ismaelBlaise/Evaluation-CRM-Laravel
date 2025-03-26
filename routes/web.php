@@ -191,6 +191,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/invoice/create/offer/{lead}', 'OffersController@create')->name('create.offer');
     Route::post('/invoice/create/invoiceLine/{invoice}', 'InvoicesController@newItems')->name('create.invoiceLine');
 
+    Route::get('/export/client', 'ExportController@export')->name('export.client');
+    
     /**
      * Invoice Lines
      */
