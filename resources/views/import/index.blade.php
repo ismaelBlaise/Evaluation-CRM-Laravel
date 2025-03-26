@@ -4,65 +4,65 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="card shadow-lg rounded">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3><i class="fas fa-file-import"></i> Importer des données</h3>
+            <div class="card shadow-lg rounded" style="border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <div class="card-header text-center" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border-radius: 20px 20px 0 0 !important;">
+                    <h3 style="font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);"><i class="fas fa-file-import"></i> Importation de donnees</h3>
                 </div>
-                <div class="card-body">
-                    <form action="{{ route('import.upload') }}" method="POST" enctype="multipart/form-data" class="p-3 border rounded bg-light">
+                <div class="card-body" style="background-color: #f8f9fa;">
+                    <form action="{{ route('import.upload') }}" method="POST" enctype="multipart/form-data" style="padding: 25px; border-radius: 15px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
                         @csrf
                         <div class="form-group">
-                            <label for="file" class="h5"><i class="fas fa-file-csv"></i> Fichier CSV 1 (Projets)</label>
-                            <input type="file" class="form-control @error('file') is-invalid @enderror" id="file" name="file" required>
+                            <label for="file" style="font-size: 1.1rem; color: #495057; font-weight: 500;"><i class="fas fa-file-csv" style="color: #2575fc;"></i> Fichier CSV 1 (Projets)</label>
+                            <input type="file" class="form-control @error('file') is-invalid @enderror" id="file" name="file" required style="padding: 10px; border-radius: 8px; border: 1px solid #ced4da; transition: border-color 0.3s;">
                             
-                            <label for="file2" class="h5 mt-3"><i class="fas fa-file-csv"></i> Fichier CSV 2 (Tâches)</label>
-                            <input type="file" class="form-control @error('file2') is-invalid @enderror" id="file2" name="file2" required>
+                            <label for="file2" style="font-size: 1.1rem; color: #495057; font-weight: 500; margin-top: 20px;"><i class="fas fa-file-csv" style="color: #2575fc;"></i> Fichier CSV 2 (Tâches)</label>
+                            <input type="file" class="form-control @error('file2') is-invalid @enderror" id="file2" name="file2" required style="padding: 10px; border-radius: 8px; border: 1px solid #ced4da; transition: border-color 0.3s;">
                             
-                            <label for="file3" class="h5 mt-3"><i class="fas fa-file-csv"></i> Fichier CSV 3 (Offres)</label>
-                            <input type="file" class="form-control @error('file3') is-invalid @enderror" id="file3" name="file3" required>
+                            <label for="file3" style="font-size: 1.1rem; color: #495057; font-weight: 500; margin-top: 20px;"><i class="fas fa-file-csv" style="color: #2575fc;"></i> Fichier CSV 3 (Offres)</label>
+                            <input type="file" class="form-control @error('file3') is-invalid @enderror" id="file3" name="file3" required style="padding: 10px; border-radius: 8px; border: 1px solid #ced4da; transition: border-color 0.3s;">
                             
                             @error('file')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback" style="color: #dc3545; font-size: 0.9rem;">{{ $message }}</div>
                             @enderror
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); border: none; padding: 12px; border-radius: 10px; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s; box-shadow: 0 4px 8px rgba(37, 117, 252, 0.3);">
                             <i class="fas fa-upload"></i> Importer
                         </button>
                     </form>
 
                     @if(session('success') || session('error'))
-                        <div class="alert alert-{{ session('success') ? 'success' : 'danger' }} mt-4">
+                        <div class="alert @if(session('success')) alert-success @else alert-danger @endif mt-4" style="border-radius: 12px; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
                             @if(session('success'))
-                                <h5 class="font-weight-bold text-center">
+                                <h5 style="font-weight: 700; text-align: center; color: #28a745;">
                                     <i class="fas fa-check-circle"></i> Importation réussie
                                 </h5>
                             @else
-                                <h5 class="font-weight-bold text-center">
+                                <h5 style="font-weight: 700; text-align: center; color: #dc3545;">
                                     <i class="fas fa-exclamation-circle"></i> Erreur lors de l'importation
                                 </h5>
                             @endif
                             
-                            <div class="text-center mt-3">
-                                <p><strong>Fichiers importés :</strong></p>
-                                <p>{{ session('file_name') }}</p>
-                                <p>{{ session('file_name2') }}</p>
+                            <div style="text-align: center; margin-top: 15px;">
+                                <p style="font-weight: 600; margin-bottom: 5px;">Fichiers importés :</p>
+                                <p style="margin-bottom: 3px;">{{ session('file_name') }}</p>
+                                <p style="margin-bottom: 3px;">{{ session('file_name2') }}</p>
                                 <p>{{ session('file_name3') }}</p>
                             </div>
                             
                             @if(session('success'))
-                                <div class="text-center mt-3">
+                                <div style="text-align: center; margin-top: 15px;">
                                     @if(session('imported_projects_rows'))
-                                        <span class="badge badge-success mr-2">
+                                        <span style="display: inline-block; background-color: #28a745; color: white; padding: 5px 10px; border-radius: 20px; margin-right: 8px; font-size: 0.85rem;">
                                             Projets: {{ session('imported_projects_rows') }} lignes
                                         </span>
                                     @endif
                                     @if(session('imported_project_tasks_rows'))
-                                        <span class="badge badge-success mr-2">
+                                        <span style="display: inline-block; background-color: #28a745; color: white; padding: 5px 10px; border-radius: 20px; margin-right: 8px; font-size: 0.85rem;">
                                             Tâches: {{ session('imported_project_tasks_rows') }} lignes
                                         </span>
                                     @endif
                                     @if(session('imported_offers_rows'))
-                                        <span class="badge badge-success">
+                                        <span style="display: inline-block; background-color: #28a745; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem;">
                                             Offres: {{ session('imported_offers_rows') }} lignes
                                         </span>
                                     @endif
@@ -70,8 +70,8 @@
                             @endif
                             
                             @if(session('skipped_rows'))
-                                <div class="text-center mt-3">
-                                    <span class="badge badge-danger">
+                                <div style="text-align: center; margin-top: 15px;">
+                                    <span style="display: inline-block; background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem;">
                                         Lignes en erreur: {{ session('skipped_rows') }}
                                     </span>
                                 </div>
@@ -80,35 +80,35 @@
                     @endif
 
                     @if(session('import_errors'))
-                        <div class="mt-4">
-                            <h4 class="text-danger text-center">
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #dc3545; text-align: center; font-weight: 700;">
                                 <i class="fas fa-exclamation-triangle"></i> Erreurs d'import
                             </h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="thead-dark">
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; margin-top: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                    <thead style="background-color: #343a40; color: white;">
                                         <tr>
-                                            <th>Fichier</th>
-                                            <th>Ligne</th>
-                                            <th>Champ</th>
-                                            <th>Erreur</th>
-                                            <th>Valeur incorrecte</th>
+                                            <th style="padding: 12px 15px; text-align: left;">Fichier</th>
+                                            <th style="padding: 12px 15px; text-align: left;">Ligne</th>
+                                            <th style="padding: 12px 15px; text-align: left;">Champ</th>
+                                            <th style="padding: 12px 15px; text-align: left;">Erreur</th>
+                                            <th style="padding: 12px 15px; text-align: left;">Valeur incorrecte</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach(session('import_errors') as $error)
-                                            <tr class="table-danger">
-                                                <td>{{ $error['source_file'] ?? 'N/A' }}</td>
-                                                <td>{{ $error['row']-1 }}</td>
-                                                <td>{{ $error['attribute'] }}</td>
-                                                <td>
-                                                    <ul class="mb-0">
+                                            <tr style="background-color: #fff5f5; border-bottom: 1px solid #ddd;">
+                                                <td style="padding: 12px 15px; color: #dc3545;">{{ $error['source_file'] ?? 'N/A' }}</td>
+                                                <td style="padding: 12px 15px; color: #dc3545;">{{ $error['row']-1 }}</td>
+                                                <td style="padding: 12px 15px; color: #dc3545;">{{ $error['attribute'] }}</td>
+                                                <td style="padding: 12px 15px;">
+                                                    <ul style="margin: 0; padding-left: 20px; color: #dc3545;">
                                                         @foreach($error['errors'] as $message)
                                                             <li>{{ $message }}</li>
                                                         @endforeach
                                                     </ul>
                                                 </td>
-                                                <td>{{ $error['values'][$error['attribute']] ?? 'N/A' }}</td>
+                                                <td style="padding: 12px 15px; color: #dc3545;">{{ $error['values'][$error['attribute']] ?? 'N/A' }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -118,96 +118,96 @@
                     @endif
 
                     @if(session('projects'))
-                        <div class="mt-4">
-                            <h4 class="text-success text-center">
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #28a745; text-align: center; font-weight: 700;">
                                 <i class="fas fa-check-circle"></i> Projets importés
                             </h4>
-                            <div class="table-responsive">
-                                <table id="tableProjects" class="table table-bordered table-striped">
-                                    <thead class="thead-light">
+                            <div style="overflow-x: auto;">
+                                <table id="tableProjects" style="width: 100%; border-collapse: collapse; margin-top: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                    <thead style="background-color: #f8f9fa;">
                                         <tr>
-                                            <th>Ligne originale</th>
-                                            <th>Nom du projet</th>
-                                            <th>Client</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Ligne originale</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Nom du projet</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Client</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach(session('projects') as $project)
-                                            <tr>
-                                                <td>{{ $project->import_row }}</td>
-                                                <td>{{ $project->project_title }}</td>
-                                                <td>{{ $project->client_name }}</td>
+                                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                                <td style="padding: 12px 15px;">{{ $project->import_row }}</td>
+                                                <td style="padding: 12px 15px;">{{ $project->project_title }}</td>
+                                                <td style="padding: 12px 15px;">{{ $project->client_name }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <div id="paginationProjects" class="pagination"></div>
+                                <div id="paginationProjects" style="display: flex; justify-content: center; margin-top: 20px;"></div>
                             </div>
                         </div>
                     @endif
 
                     @if(session('project_tasks'))
-                        <div class="mt-4">
-                            <h4 class="text-success text-center">
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #28a745; text-align: center; font-weight: 700;">
                                 <i class="fas fa-check-circle"></i> Tâches importées
                             </h4>
-                            <div class="table-responsive">
-                                <table id="tableProjectTasks" class="table table-bordered table-striped">
-                                    <thead class="thead-light">
+                            <div style="overflow-x: auto;">
+                                <table id="tableProjectTasks" style="width: 100%; border-collapse: collapse; margin-top: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                    <thead style="background-color: #f8f9fa;">
                                         <tr>
-                                            <th>Ligne originale</th>
-                                            <th>Nom du projet</th>
-                                            <th>Titre de la tâche</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Ligne originale</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Nom du projet</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Titre de la tâche</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach(session('project_tasks') as $project_task)
-                                            <tr>
-                                                <td>{{ $project_task->import_row }}</td>
-                                                <td>{{ $project_task->project_title }}</td>
-                                                <td>{{ $project_task->task_title }}</td>
+                                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                                <td style="padding: 12px 15px;">{{ $project_task->import_row }}</td>
+                                                <td style="padding: 12px 15px;">{{ $project_task->project_title }}</td>
+                                                <td style="padding: 12px 15px;">{{ $project_task->task_title }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <div id="paginationProjectTasks" class="pagination"></div>
+                                <div id="paginationProjectTasks" style="display: flex; justify-content: center; margin-top: 20px;"></div>
                             </div>
                         </div>
                     @endif
 
                     @if(session('offers'))
-                        <div class="mt-4">
-                            <h4 class="text-success text-center">
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #28a745; text-align: center; font-weight: 700;">
                                 <i class="fas fa-check-circle"></i> Offres importées
                             </h4>
-                            <div class="table-responsive">
-                                <table id="tableOffers" class="table table-bordered table-striped">
-                                    <thead class="thead-light">
+                            <div style="overflow-x: auto;">
+                                <table id="tableOffers" style="width: 100%; border-collapse: collapse; margin-top: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                    <thead style="background-color: #f8f9fa;">
                                         <tr>
-                                            <th>Ligne originale</th>
-                                            <th>Nom du client</th>
-                                            <th>Titre du lead</th>
-                                            <th>Type</th>
-                                            <th>Produit</th>
-                                            <th>Prix</th>
-                                            <th>Quantité</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Ligne originale</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Nom du client</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Titre du lead</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Type</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Produit</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Prix</th>
+                                            <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600;">Quantité</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach(session('offers') as $offer)
-                                            <tr>
-                                                <td>{{ $offer->import_row }}</td>
-                                                <td>{{ $offer->client_name }}</td>
-                                                <td>{{ $offer->lead_title }}</td>
-                                                <td>{{ $offer->type }}</td>
-                                                <td>{{ $offer->produit }}</td>
-                                                <td>{{ $offer->prix }}</td>
-                                                <td>{{ $offer->quantite }}</td>
+                                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                                <td style="padding: 12px 15px;">{{ $offer->import_row }}</td>
+                                                <td style="padding: 12px 15px;">{{ $offer->client_name }}</td>
+                                                <td style="padding: 12px 15px;">{{ $offer->lead_title }}</td>
+                                                <td style="padding: 12px 15px;">{{ $offer->type }}</td>
+                                                <td style="padding: 12px 15px;">{{ $offer->produit }}</td>
+                                                <td style="padding: 12px 15px;">{{ $offer->prix }}</td>
+                                                <td style="padding: 12px 15px;">{{ $offer->quantite }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <div id="paginationOffers" class="pagination"></div>
+                                <div id="paginationOffers" style="display: flex; justify-content: center; margin-top: 20px;"></div>
                             </div>
                         </div>
                     @endif
@@ -244,16 +244,28 @@ document.addEventListener("DOMContentLoaded", function () {
         function renderPagination() {
             pagination.innerHTML = "";
             let ul = document.createElement("ul");
-            ul.classList.add("pagination-list");
+            ul.style.listStyle = "none";
+            ul.style.padding = "0";
+            ul.style.display = "flex";
+            ul.style.gap = "5px";
 
             // Previous button
             if (totalPages > 1) {
                 let prevLi = document.createElement("li");
                 prevLi.textContent = "«";
-                prevLi.classList.add("page-item");
+                prevLi.style.padding = "5px 10px";
+                prevLi.style.border = "1px solid #2575fc";
+                prevLi.style.color = "#2575fc";
+                prevLi.style.cursor = "pointer";
+                prevLi.style.borderRadius = "5px";
+                prevLi.style.minWidth = "35px";
+                prevLi.style.textAlign = "center";
+                
                 if (currentPage === 1) {
-                    prevLi.classList.add("disabled");
+                    prevLi.style.opacity = "0.5";
+                    prevLi.style.cursor = "not-allowed";
                 }
+                
                 prevLi.addEventListener("click", function () {
                     if (currentPage > 1) {
                         currentPage--;
@@ -268,10 +280,19 @@ document.addEventListener("DOMContentLoaded", function () {
             for (let i = 1; i <= totalPages; i++) {
                 let li = document.createElement("li");
                 li.textContent = i;
-                li.classList.add("page-item");
+                li.style.padding = "5px 10px";
+                li.style.border = "1px solid #2575fc";
+                li.style.color = "#2575fc";
+                li.style.cursor = "pointer";
+                li.style.borderRadius = "5px";
+                li.style.minWidth = "35px";
+                li.style.textAlign = "center";
+                
                 if (i === currentPage) {
-                    li.classList.add("active");
+                    li.style.backgroundColor = "#2575fc";
+                    li.style.color = "white";
                 }
+                
                 li.addEventListener("click", function () {
                     currentPage = i;
                     showPage(currentPage);
@@ -284,10 +305,19 @@ document.addEventListener("DOMContentLoaded", function () {
             if (totalPages > 1) {
                 let nextLi = document.createElement("li");
                 nextLi.textContent = "»";
-                nextLi.classList.add("page-item");
+                nextLi.style.padding = "5px 10px";
+                nextLi.style.border = "1px solid #2575fc";
+                nextLi.style.color = "#2575fc";
+                nextLi.style.cursor = "pointer";
+                nextLi.style.borderRadius = "5px";
+                nextLi.style.minWidth = "35px";
+                nextLi.style.textAlign = "center";
+                
                 if (currentPage === totalPages) {
-                    nextLi.classList.add("disabled");
+                    nextLi.style.opacity = "0.5";
+                    nextLi.style.cursor = "not-allowed";
                 }
+                
                 nextLi.addEventListener("click", function () {
                     if (currentPage < totalPages) {
                         currentPage++;
@@ -302,10 +332,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         function updateActivePage() {
-            let items = pagination.querySelectorAll(".page-item");
+            let items = pagination.querySelectorAll("li");
             items.forEach((item, index) => {
                 if (item.textContent === "«" || item.textContent === "»") return;
-                item.classList.toggle("active", parseInt(item.textContent) === currentPage);
+                
+                if (parseInt(item.textContent) === currentPage) {
+                    item.style.backgroundColor = "#2575fc";
+                    item.style.color = "white";
+                } else {
+                    item.style.backgroundColor = "";
+                    item.style.color = "#2575fc";
+                }
             });
         }
 
@@ -319,47 +356,4 @@ document.addEventListener("DOMContentLoaded", function () {
     setupPagination("tableOffers", "paginationOffers");
 });
 </script>
-<style>
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.pagination-list {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 5px;
-}
-
-.page-item {
-    padding: 5px 10px;
-    border: 1px solid #007bff;
-    color: #007bff;
-    cursor: pointer;
-    border-radius: 5px;
-    min-width: 35px;
-    text-align: center;
-}
-
-.page-item:hover:not(.disabled) {
-    background-color: #007bff;
-    color: white;
-}
-
-.page-item.active {
-    background-color: #007bff;
-    color: white;
-}
-
-.page-item.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.table-responsive {
-    margin-bottom: 20px;
-}
-</style>
 @endsection
