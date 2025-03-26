@@ -35,6 +35,8 @@ class ResetService{
         DB::table('crm2.invoices')->truncate();
         DB::table('crm2.offers')->truncate();
         DB::table('crm2.clients')->truncate();
+        DB::table('crm2.products')->truncate();
+
 
         // $adminUserIds = DB::table('crm2.role_user')
         //     ->join('crm2.roles', 'crm2.role_user.role_id', '=', 'crm2.roles.id')
