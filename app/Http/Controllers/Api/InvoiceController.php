@@ -60,6 +60,23 @@ class InvoiceController extends Controller
         ]);
     }
 
+
+
+    public function sumInvoice(){
+        $invoices=Invoice::all();
+        $sumInvoice=0;
+        foreach ($invoices as $invoice) {
+            $invoiceCalculator = new InvoiceCalculator($invoice);
+            $sumInvoice+= $invoiceCalculator->getTotalPrice()->getBigDecimalAmount(); 
+    
+        }
+        return response()->json([
+            'sum_invoice'=> $sumInvoice
+            ]);
+    }
+
+
+
     
 
 

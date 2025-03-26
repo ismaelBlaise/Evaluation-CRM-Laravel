@@ -68,6 +68,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [InvoiceController::class, 'data']);
         Route::get('/nb', [InvoiceController::class, 'nbdata']);
         Route::get('/chart/{annee?}/{mois?}', [InvoiceController::class, 'invoicePaymentSummary']);
+        Route::get('/sum', [InvoiceController::class, 'sumInvoice']);
+
     });
 
     // Payment Routes
