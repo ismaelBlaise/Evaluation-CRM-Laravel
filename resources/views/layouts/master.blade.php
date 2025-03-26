@@ -166,7 +166,7 @@
 
             @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
                 <a href="{{ route('import.index') }}" class="list-group-item" data-bs-toggle="collapse" data-bs-parent="#MainMenu">
-                    <i class="fa fa-file-csv sidebar-icon"></i>
+                    <i class="fa fa-upload sidebar-icon"></i>
                     <span id="menu-txt">{{ __('Import CSV') }}</span>
                 </a>
             @endif
